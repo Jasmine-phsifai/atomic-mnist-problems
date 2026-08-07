@@ -1,0 +1,177 @@
+% Shared visual system, adapted from the user's May/June 2026 report style.
+\usepackage{fontspec}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{centernot}
+\usepackage{booktabs,array,longtable,tabularx}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{microtype}
+\usepackage{ragged2e}
+\usepackage{etoolbox}
+\usepackage{fvextra}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{float}
+
+\geometry{top=2.25cm,bottom=2.45cm,left=2.55cm,right=2.55cm}
+\IfFontExistsTF{Noto Serif CJK SC}
+  {\setmainfont{Noto Serif CJK SC}}
+  {\setmainfont{DejaVu Serif}}
+\IfFontExistsTF{Noto Sans CJK SC}
+  {\setsansfont{Noto Sans CJK SC}}
+  {\setsansfont{DejaVu Sans}}
+\IfFontExistsTF{Noto Sans Mono CJK SC}
+  {\setmonofont{Noto Sans Mono CJK SC}}
+  {\setmonofont{DejaVu Sans Mono}}
+
+\definecolor{DeepBlue}{HTML}{1F4E79}
+\definecolor{SoftBlue}{HTML}{EAF2F8}
+\definecolor{SoftGray}{HTML}{F5F6F7}
+\definecolor{DarkGray}{HTML}{444444}
+\definecolor{SoftOrange}{HTML}{FFF3E0}
+\definecolor{OrangeEdge}{HTML}{C77400}
+\definecolor{SoftGreen}{HTML}{EAF7EA}
+\definecolor{GreenEdge}{HTML}{2D7D46}
+\definecolor{SoftRed}{HTML}{FDECEC}
+\definecolor{RedEdge}{HTML}{A83B3B}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=DeepBlue,
+  urlcolor=DeepBlue,
+  citecolor=DeepBlue,
+  pdfborder={0 0 0}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlength{\emergencystretch}{2em}
+\linespread{1.28}
+\setlist[itemize]{leftmargin=1.55em,itemsep=0.25em,topsep=0.25em}
+\setlist[enumerate]{leftmargin=1.75em,itemsep=0.3em,topsep=0.25em}
+\setcounter{secnumdepth}{0}
+
+\titleformat{\section}
+  {\Large\sffamily\bfseries\color{DeepBlue}}
+  {}{0pt}{}
+\titleformat{\subsection}
+  {\large\sffamily\bfseries\color{DeepBlue}}
+  {}{0pt}{}
+\titleformat{\subsubsection}
+  {\normalsize\sffamily\bfseries\color{DarkGray}}
+  {}{0pt}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\small Atomic MNIST Problems}
+\fancyhead[R]{\sffamily\small Mathematics $\leftrightarrow$ Engineering}
+\fancyfoot[C]{\sffamily\small \thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.35pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newtcolorbox{summarybox}[1][]{
+  enhanced,
+  colback=SoftBlue,
+  colframe=DeepBlue,
+  boxrule=0.65pt,
+  arc=2mm,
+  left=1.2mm,right=1.2mm,top=1.2mm,bottom=1.2mm,
+  #1
+}
+\newtcolorbox{contractbox}[1][Code contract]{
+  enhanced,
+  title={#1},
+  fonttitle=\sffamily\bfseries,
+  colback=SoftGray,
+  colframe=DarkGray,
+  boxrule=0.55pt,
+  arc=2mm,
+  left=1.2mm,right=1.2mm,top=1.0mm,bottom=1.0mm
+}
+\newtcolorbox{gapbox}[1][Theory--engineering gap]{
+  enhanced,
+  title={#1},
+  fonttitle=\sffamily\bfseries,
+  colback=SoftOrange,
+  colframe=OrangeEdge,
+  boxrule=0.65pt,
+  arc=2mm,
+  left=1.2mm,right=1.2mm,top=1.0mm,bottom=1.0mm
+}
+\newtcolorbox{evidencebox}[1][Acceptance evidence]{
+  enhanced,
+  title={#1},
+  fonttitle=\sffamily\bfseries,
+  colback=SoftGreen,
+  colframe=GreenEdge,
+  boxrule=0.65pt,
+  arc=2mm,
+  left=1.2mm,right=1.2mm,top=1.0mm,bottom=1.0mm
+}
+\newtcolorbox{warningbox}[1][Failure mode]{
+  enhanced,
+  title={#1},
+  fonttitle=\sffamily\bfseries,
+  colback=SoftRed,
+  colframe=RedEdge,
+  boxrule=0.65pt,
+  arc=2mm,
+  left=1.2mm,right=1.2mm,top=1.0mm,bottom=1.0mm
+}
+\newtcolorbox{sourcebox}[1][Source lineage]{
+  enhanced,
+  title={#1},
+  fonttitle=\sffamily\bfseries,
+  colback=white,
+  colframe=DeepBlue,
+  boxrule=0.45pt,
+  arc=2mm,
+  left=1.2mm,right=1.2mm,top=1.0mm,bottom=1.0mm
+}
+
+\DefineVerbatimEnvironment{Code}{Verbatim}{
+  frame=single,
+  rulecolor=\color{DarkGray},
+  fontsize=\small,
+  breaklines=true,
+  breakanywhere=true,
+  framesep=2mm,
+  tabsize=4
+}
+
+\newcommand{\problemstart}[5]{%
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{section}{#1: #2}
+  {\sffamily\small\bfseries\color{DarkGray}#1 \hfill #3}\par
+  {\Large\sffamily\bfseries\color{DeepBlue}#2}\par
+  {\small\sffamily\color{DarkGray}#4}\par
+  \begin{summarybox}
+    \textbf{Atomic objective.} #5
+  \end{summarybox}
+}
+
+\newcommand{\chapterdivider}[3]{%
+  \clearpage
+  \thispagestyle{empty}
+  \vspace*{0.17\textheight}
+  {\sffamily\bfseries\color{DeepBlue}\Huge Chapter #1}\par
+  \vspace{0.6em}
+  {\sffamily\bfseries\LARGE #2}\par
+  \vspace{1.3em}
+  \begin{summarybox}
+    #3
+  \end{summarybox}
+  \vfill
+  {\sffamily\small The order is cumulative; the problems are not duplicate implementations.}
+  \clearpage
+}
+
+\newcommand{\metric}[1]{\ensuremath{\operatorname{#1}}}
+\newcommand{\code}[1]{\texttt{#1}}

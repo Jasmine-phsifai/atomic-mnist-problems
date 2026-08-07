@@ -1,0 +1,68 @@
+\problemstart{AP-02-003}{Softmax With Shift Invariance and a Named Axis}{Difficulty 3/5}{Chapter 2 \textbullet\ numpy}{Compute normalized class probabilities for extreme logits while preserving axis and shift invariants.}
+
+        \subsection{Mathematical statement}
+
+
+For logits $Z\in\mathbb R^{N\times K}$,
+\[
+  P_{ik}=\frac{e^{Z_{ik}-m_i}}{\sum_{j=1}^{K}e^{Z_{ij}-m_i}},
+  \qquad m_i=\max_jZ_{ij}.
+\]
+For any row-wise shift $a_i$,
+\[
+  \operatorname{softmax}(Z+\bm a\bm 1_K^\top)
+  =\operatorname{softmax}(Z),\qquad
+  P\bm 1_K=\bm 1_N.
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement stable softmax along a caller-selected axis for finite float32/float64
+arrays.  Normalize with the maximum retained via \code{keepdims=True}; preserve
+shape and dtype.  Reject scalar input and an invalid axis.  SciPy is an oracle,
+not the learner implementation.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def stable_softmax(logits: np.ndarray, *, axis: int = -1) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} The ratio of exponentials is well-defined over reals, but a program must control overflow, reduction axis, retained dimensions, and summation rounding.
+
+        \textbf{Implicit gap exposed by the result.} Adding $10^4$ to every logit leaves the mathematics unchanged but causes a naive implementation to produce non-finite probabilities.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Extreme logits yield finite nonnegative probabilities whose selected-axis sums are one.
+  \item Shift-invariance error and SciPy-oracle error are measured independently.
+  \item A non-last-axis fixture proves the axis argument is not decorative.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use NumPy array primitives; do not call SciPy softmax in \code{starter.py}.
+  \item Do not clip logits or add epsilon to the denominator.
+  \item Preserve the input floating dtype.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_linear-classification/softmax-regression.html}{D2L: Softmax Regression}
+  \item \href{https://d2l.ai/chapter_linear-classification/softmax-regression-scratch.html}{D2L: Softmax from Scratch}
+  \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.softmax.html}{SciPy: softmax}
+  \item \href{https://cs231n.github.io/linear-classify/}{Stanford CS231n: Linear Classification}
+        \end{itemize}
+        \end{sourcebox}

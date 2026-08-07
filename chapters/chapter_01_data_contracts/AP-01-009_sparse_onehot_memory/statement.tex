@@ -1,0 +1,66 @@
+\problemstart{AP-01-009}{Sparse Labels and One-Hot Storage}{Difficulty 2/5}{Chapter 1 \textbullet\ numpy}{Construct a checked one-hot representation and quantify the storage cost hidden by notation.}
+
+        \subsection{Mathematical statement}
+
+
+For $y_i\in\{0,\ldots,K-1\}$, define
+\[
+  Y_{ik}=\mathbf 1[y_i=k],\qquad
+  Y\bm 1_K=\bm 1_N,\qquad
+  y_i=\arg\max_kY_{ik}.
+\]
+Two value-equivalent label representations have storage costs
+\[
+  M_{\mathrm{sparse}}=N\,s_{\mathrm{int}},\qquad
+  M_{\mathrm{onehot}}=NK\,s_{\mathrm{float}}.
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement checked one-hot construction.  Require a one-dimensional integer
+label vector, positive integer class count, and label domain $[0,K)$.  Return a
+C-contiguous array in explicitly requested float32 or float64 dtype.  Do not
+mutate labels.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def one_hot(labels: np.ndarray, *, num_classes: int, dtype: np.dtype | type = np.float32) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} The basis vector $\bm e_{y_i}$ is representation-free, whereas software must choose dense/sparse storage, dtype, layout, and invalid-index behavior.
+
+        \textbf{Implicit gap exposed by the result.} The measured amplification ratio shows that a mathematically convenient expansion can be an engineering regression even when values are exact.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Rows sum to one, argmax recovers labels, and invalid labels/dtypes fail.
+  \item The benchmark prints sparse and dense byte counts plus their ratio for $K=10$.
+  \item Output contiguity and requested dtype are tested independently of value correctness.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use a NumPy vectorized indexing or identity-matrix operation.
+  \item Do not write nested loops and do not reimplement an array library.
+  \item Do not replace sparse labels globally; this problem studies the boundary.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_preliminaries/ndarray.html}{D2L: Data Manipulation}
+  \item \href{https://d2l.ai/chapter_linear-classification/softmax-regression.html}{D2L: Softmax Regression}
+        \end{itemize}
+        \end{sourcebox}

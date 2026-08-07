@@ -1,0 +1,65 @@
+\problemstart{AP-02-008}{The Finite-Difference Step Has a U-Curve}{Difficulty 3/5}{Chapter 2 \textbullet\ numpy}{Implement a central derivative and empirically separate truncation error from cancellation/rounding error.}
+
+        \subsection{Mathematical statement}
+
+
+For coordinate $j$ and step $h>0$, central difference is
+\[
+  D_j(h)=\frac{f(\bm x+h\bm e_j)-f(\bm x-h\bm e_j)}{2h}.
+\]
+Under smoothness and floating arithmetic, a useful error model is
+\[
+  |D_j(h)-\partial_jf(\bm x)|
+  \lesssim C_{\mathrm{tr}}h^2+C_{\mathrm{rd}}\frac{u}{h},
+\]
+so ``smaller $h$'' is not monotone improvement.
+
+
+        \subsection{Code problem}
+
+
+Implement a side-effect-safe central difference for a NumPy vector and scalar
+callable.  Copy the input for both evaluations, validate the coordinate and
+finite positive step, and return a Python float.  The benchmark sweeps logarithmic
+steps on a stable classification loss and locates the empirical minimum.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def central_difference(f, x: np.ndarray, *, index: int, h: float) -> float:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} The limit $h\to0$ in analysis is not an instruction to choose the smallest representable machine step; evaluation noise grows after subtraction and division.
+
+        \textbf{Implicit gap exposed by the result.} The plotted error decreases and then rises.  The reported minimizing step is empirical evidence, not a universal magic threshold.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item A quadratic fixture agrees with its analytic derivative and the input remains unchanged.
+  \item Invalid coordinate, nonpositive/nonfinite step, or non-scalar function result fails.
+  \item The benchmark saves a log--log U-curve and prints the best step/error for this function and dtype.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Do not mutate the caller's vector and restore it later; use independent copies.
+  \item Do not use complex-step differentiation or autograd in this problem.
+  \item Do not encode a single recommended $h$ into the implementation.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://cs231n.github.io/optimization-1/}{Stanford CS231n: Losses and Optimization}
+  \item \href{https://numpy.org/doc/stable/reference/generated/numpy.finfo.html}{NumPy: numpy.finfo}
+        \end{itemize}
+        \end{sourcebox}

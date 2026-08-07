@@ -1,0 +1,67 @@
+\problemstart{AP-01-012}{NumPy to TensorFlow: A Snapshot Boundary}{Difficulty 3/5}{Chapter 1 \textbullet\ tensorflow}{Guarantee value isolation at the TensorFlow boundary without depending on undocumented buffer-sharing behavior.}
+
+        \subsection{Mathematical statement}
+
+
+For source array $A(t)$ at call time $t_0$, construct an immutable tensor snapshot
+$T$ and a later NumPy snapshot $B$ such that
+\[
+\begin{aligned}
+T&=\operatorname{cast}(A(t_0)), & A(t_1)\ne A(t_0)&\centernot\implies T(t_1)\ne T(t_0),\\
+B&=\operatorname{value}(T), & B(t_2)\ne B(t_1)&\centernot\implies T(t_2)\ne T(t_1).
+\end{aligned}
+\]
+The contract is isolation, not a claim about TensorFlow's internal optimization.
+
+
+        \subsection{Code problem}
+
+
+Implement conversion in both directions with explicit snapshots.  The first
+function must copy the NumPy input before \code{tf.convert\_to\_tensor}; the
+second must return an independent NumPy copy of an eager tensor's value.  Reject
+TensorFlow variables and non-eager objects for this narrowly defined problem.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def numpy_to_tensor_snapshot(array: np.ndarray, *, dtype) -> tf.Tensor:
+
+def tensor_to_numpy_snapshot(tensor: tf.Tensor) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} A mathematical value conversion says nothing about runtime mutability, buffer sharing, eager execution, device copies, or lifetime guarantees.
+
+        \textbf{Implicit gap exposed by the result.} Mutation transmission is required to be false in both directions, contrasting with the intentional PyTorch alias in the preceding problem.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Mutating the NumPy source after conversion does not alter the tensor.
+  \item Mutating the returned NumPy snapshot does not alter the tensor.
+  \item Shape and explicitly requested TensorFlow dtype are preserved.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use eager TensorFlow and CPU-compatible operations; no model or gradient tape.
+  \item Do not assert undocumented pointer identity.
+  \item Install the pinned TensorFlow CPU environment to run this problem.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://www.tensorflow.org/api_docs/python/tf/convert_to_tensor}{TensorFlow: tf.convert\_to\_tensor}
+  \item \href{https://www.tensorflow.org/guide/tensor}{TensorFlow: Tensor guide}
+  \item \href{https://numpy.org/doc/stable/user/basics.copies.html}{NumPy: Copies and views}
+        \end{itemize}
+        \end{sourcebox}

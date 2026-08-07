@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+
+# Datasets are intentionally external to this repository.
+data/
+datasets/
+*.npy
+*.npz
+*.csv
+
+# Generated LaTeX intermediates and rendered PDFs.
+build/
+output/
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.xdv

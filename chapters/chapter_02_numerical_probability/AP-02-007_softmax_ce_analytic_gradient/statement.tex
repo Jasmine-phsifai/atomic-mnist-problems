@@ -1,0 +1,69 @@
+\problemstart{AP-02-007}{Derive and Implement the Softmax-Loss Gradient}{Difficulty 4/5}{Chapter 2 \textbullet\ numpy}{Translate a vector-calculus derivative into a stable, batched gradient with an explicit mean reduction.}
+
+        \subsection{Mathematical statement}
+
+
+For mean sparse cross-entropy
+\[
+  L(Z,y)=\frac1N\sum_{i=1}^{N}
+  \left(\log\sum_{k=1}^{K}e^{Z_{ik}}-Z_{i,y_i}\right),
+\]
+derive the Jacobian contribution of each row, then implement
+\[
+  G=\nabla_ZL\in\mathbb R^{N\times K}.
+\]
+Your derivation should explain the invariant
+$G\bm 1_K=\bm 0_N$, which is the differential counterpart of row-wise shift
+invariance.
+
+
+        \subsection{Code problem}
+
+
+Write your derivation as comments adjacent to the implementation, then compute
+the mean-loss gradient using stable normalized exponentials and sparse labels.
+Do not use autograd, symbolic differentiation, or a framework loss.  The tests
+check values through independent central differences rather than importing a
+reference gradient function.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def softmax_cross_entropy_gradient(logits: np.ndarray, labels: np.ndarray) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} A correct symbolic derivative still leaves batch reduction, stable probability evaluation, sparse indexing, dtype, and output-shape decisions.
+
+        \textbf{Implicit gap exposed by the result.} Row-sum zero can pass while coordinates are scaled by the wrong batch factor; finite differences and the invariant are therefore complementary evidence.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item All row sums are near zero and the output shape/dtype match the logits.
+  \item Every coordinate of a small fixture agrees with a central-difference derivative of the stable scalar loss.
+  \item The benchmark prints maximum absolute error, maximum relative error, and shift-null residual separately.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item No PyTorch, TensorFlow, JAX, autograd, or finite differences inside the learner function.
+  \item Support finite rank-two float64 logits and one-dimensional integer labels.
+  \item Use the mean reduction exactly as stated.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_linear-classification/softmax-regression-scratch.html}{D2L: Softmax from Scratch}
+  \item \href{https://cs231n.github.io/optimization-1/}{Stanford CS231n: Losses and Optimization}
+  \item \href{https://cs231n.github.io/linear-classify/}{Stanford CS231n: Linear Classification}
+        \end{itemize}
+        \end{sourcebox}

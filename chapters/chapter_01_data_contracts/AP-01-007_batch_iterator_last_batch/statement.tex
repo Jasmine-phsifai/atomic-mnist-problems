@@ -1,0 +1,66 @@
+\problemstart{AP-01-007}{A Minibatch Iterator With an Explicit Tail Policy}{Difficulty 3/5}{Chapter 1 \textbullet\ numpy}{Enumerate one epoch exactly once while making shuffle reproducibility and the final partial batch observable.}
+
+        \subsection{Mathematical statement}
+
+
+For $N$ indices and batch size $B$, write
+\[
+  N=qB+r,\qquad 0\le r<B.
+\]
+With \code{drop\_last=False}, the batch-size vector is
+\[
+  \bm b=(\underbrace{B,\ldots,B}_{q\text{ times}},\ r)^
+  \top
+\]
+when $r>0$; with \code{drop\_last=True}, the residual $r$ indices are explicitly
+discarded.  A shuffled epoch applies one seeded permutation before partitioning.
+
+
+        \subsection{Code problem}
+
+
+Implement a generator over batches of supplied indices.  Validate all inputs,
+copy or permute the input without mutating it, and yield one-dimensional arrays.
+The non-dropping policy must cover every supplied index exactly once.  The
+dropping policy must yield only full batches and discard exactly $r$ samples.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def iter_minibatches(indices: np.ndarray, *, batch_size: int, shuffle: bool, seed: int, drop_last: bool):
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} A partition into sets does not specify iteration order, RNG scope, mutation ownership, generator exhaustion, or residual-batch policy.
+
+        \textbf{Implicit gap exposed by the result.} Prime-sized epochs and batch sizes expose duplication, omission, and infinite/restarted iterators that ordinary divisible examples hide.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item For $N=23,B=5$, non-dropping sizes are $(5,5,5,5,3)$ and coverage/uniqueness ratios are one.
+  \item Dropping yields four full batches and a discarded-count diagnostic of three.
+  \item Same-seed concatenations match, different-seed concatenations differ, and the source index array is unchanged.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Do not use PyTorch/TensorFlow data loaders.
+  \item Instantiate one local NumPy \code{Generator} per call.
+  \item Yield arrays; do not materialize the whole epoch as a nested Python list.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/reference/random/generator.html}{NumPy: Random Generator}
+  \item \href{https://d2l.ai/chapter_preliminaries/ndarray.html}{D2L: Data Manipulation}
+        \end{itemize}
+        \end{sourcebox}

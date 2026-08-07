@@ -1,0 +1,70 @@
+\problemstart{AP-01-001}{A Trust-Bounded NPZ Loader}{Difficulty 2/5}{Chapter 1 \textbullet\ numpy}{Load exactly one manifest-named numerical array without silently enabling Python object deserialization.}
+
+        \subsection{Mathematical statement}
+
+
+Let a serialized artifact denote an array
+\[
+  A \in \{0,\ldots,255\}^{N\times 28\times 28}.
+\]
+The mathematical map $\mathcal{L}(p,k)=A$ assumes that $p$ denotes a valid
+artifact and $k$ denotes the intended member.  Your program must refine this to
+a partial map with an explicit failure set:
+\[
+  \mathcal{L}: (p,k) \longmapsto
+  \begin{cases}
+    A, & \text{one numerical member named }k,\\
+    \mathsf{error}, & \text{wrong suffix, key set, or object dtype.}
+  \end{cases}
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement a loader for one-array \code{.npz} artifacts.  Require the member set
+to equal $\{k\}$, pass \code{allow\_pickle=False} explicitly, extract the array
+inside a context manager, reject object arrays, and return an array that remains
+usable after the archive is closed.  Do not download data and do not guess a key.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def load_npz_array(path: Path, *, expected_key: str) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} An array in mathematics has no file suffix, archive member set, deserialization policy, or resource lifetime.
+
+        \textbf{Implicit gap exposed by the result.} The malicious-object fixture and post-close read reveal whether a seemingly correct \code{np.load} call crossed a trust boundary or leaked archive ownership.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item A safe numerical fixture round-trips exactly and remains readable after the archive closes.
+  \item Wrong suffix, missing/extra key, and object-dtype fixtures are rejected.
+  \item The benchmark prints payload bytes, wall time, and throughput as observations; no machine-independent speed threshold is invented.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use NumPy's loader; do not implement ZIP or NPY parsing.
+  \item Never set \code{allow\_pickle=True}.
+  \item Do not hide the selected key in module state.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/reference/generated/numpy.lib.format.html}{NumPy: NPY/NPZ format}
+  \item \href{https://numpy.org/doc/stable/reference/generated/numpy.load.html}{NumPy: numpy.load}
+  \item \href{https://arxiv.org/abs/1908.01242}{Kannada-MNIST paper}
+        \end{itemize}
+        \end{sourcebox}

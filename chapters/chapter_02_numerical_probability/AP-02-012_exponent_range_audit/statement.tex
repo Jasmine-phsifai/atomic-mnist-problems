@@ -1,0 +1,68 @@
+\problemstart{AP-02-012}{Find the Exponential Overflow Frontier}{Difficulty 4/5}{Chapter 2 \textbullet\ numpy}{Locate the adjacent floating inputs that bracket finite and overflowing exponentiation for each dtype.}
+
+        \subsection{Mathematical statement}
+
+
+For format $\tau$, let $M_\tau$ be its largest finite value.  The real estimate
+of the frontier is $\log M_\tau$.  Define representable neighbors
+\[
+  x^-_\tau=\max\{x\in\mathbb F_\tau:e^x<\infty\},\qquad
+  x^+_\tau=\operatorname{nextafter}_\tau(x^-_\tau,+\infty).
+\]
+The audit must establish
+\[
+e^{x^-_\tau}<\infty,\qquad e^{x^+_\tau}=+\infty,\qquad
+x^+_\tau-x^-_\tau=\operatorname{ulp}^+_\tau(x^-_\tau).
+\]
+
+
+        \subsection{Code problem}
+
+
+Starting from \code{log(finfo.max)}, walk with \code{nextafter} until you locate
+the adjacent finite/overflowing inputs for float16, float32, or float64.  Return
+\code{log\_max}, \code{last\_finite}, \code{first\_overflow}, and
+\code{bracket\_width} as Python floats.  Suppress only the expected overflow
+warning during the probe.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def exp_range_audit(dtype: np.dtype | type) -> dict[str, float]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} A theoretical bound $\log M$ is a real number; an executable frontier depends on rounding of the input, the exponential implementation, and adjacent representable values.
+
+        \textbf{Implicit gap exposed by the result.} The three dtypes have dramatically different frontiers and bracket widths, explaining why a value safe in float32 can overflow float16 before any optimizer issue exists.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item The returned inputs are adjacent in the requested dtype.
+  \item Exponentiation is finite at the lower input and non-finite at the upper input.
+  \item The benchmark prints a dtype table; there is no single cross-dtype threshold.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use \code{np.finfo}, \code{np.log}, \code{np.exp}, and \code{np.nextafter}; do not inspect bit patterns.
+  \item Bound the adjustment loop and fail if adjacency cannot be established.
+  \item Support exactly float16, float32, and float64.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/reference/generated/numpy.finfo.html}{NumPy: numpy.finfo}
+  \item \href{https://numpy.org/doc/stable/reference/generated/numpy.nextafter.html}{NumPy: numpy.nextafter}
+  \item \href{https://d2l.ai/chapter_multilayer-perceptrons/numerical-stability-and-init.html}{D2L: Numerical Stability and Initialization}
+        \end{itemize}
+        \end{sourcebox}

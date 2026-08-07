@@ -1,0 +1,67 @@
+\documentclass[11pt,a4paper]{article}
+\input{../latex/preamble.tex}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{0.12\textheight}
+  {\Huge\sffamily\bfseries\color{DeepBlue} Atomic MNIST Problems\par}
+  \vspace{0.7em}
+  {\LARGE\sffamily Mathematics $\leftrightarrow$ Engineering\par}
+  \vspace{2.0em}
+  \begin{summarybox}[width=0.86\textwidth]
+    \centering
+    \large A solution-free, evidence-driven curriculum\newline
+    Chapters 1--2 only: $12+16=28$ atomic code problems
+  \end{summarybox}
+  \vfill
+  {\sffamily Version 0.1.0\par}
+  {\sffamily 7 August 2026\par}
+\end{titlepage}
+
+\tableofcontents
+
+\chapterdivider{1}{Data Contracts and Batching}{
+  Mathematical arrays do not carry file trust, storage aliasing, split
+  provenance, last-batch policy, or framework ownership. These twelve problems
+  make those contracts observable before any model is trained.
+}
+
+\input{../chapters/chapter_01_data_contracts/AP-01-001_npz_loader_contract/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-002_dataset_schema_validator/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-003_safe_pixel_normalization/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-004_reshape_view_copy_contract/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-005_broadcasting_axis_contract/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-006_stratified_split_allocation/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-007_batch_iterator_last_batch/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-008_sample_weighted_metric_reduction/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-009_sparse_onehot_memory/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-010_split_fingerprint_leakage/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-011_pytorch_numpy_alias_boundary/statement.tex}
+\input{../chapters/chapter_01_data_contracts/AP-01-012_tensorflow_numpy_snapshot_boundary/statement.tex}
+
+\chapterdivider{2}{Numerical Stability and Probability}{
+  Algebraically equivalent expressions can have radically different finite
+  precision behavior. These sixteen problems turn that difference into measured
+  evidence and connect it to classification losses and gradient checks.
+}
+
+\input{../chapters/chapter_02_numerical_probability/AP-02-001_ulp_spacing_map/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-002_stable_softplus/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-003_stable_softmax/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-004_sparse_cross_entropy_logits/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-005_entropy_kl_boundaries/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-006_label_smoothing_contract/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-007_softmax_ce_analytic_gradient/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-008_finite_difference_step_sweep/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-009_directional_gradient_check/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-010_compensated_summation/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-011_welford_online_variance/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-012_exponent_range_audit/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-013_minibatch_gradient_estimator/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-014_initialization_variance_propagation/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-015_pytorch_cross_entropy_semantics/statement.tex}
+\input{../chapters/chapter_02_numerical_probability/AP-02-016_tensorflow_cross_entropy_semantics/statement.tex}
+
+\end{document}

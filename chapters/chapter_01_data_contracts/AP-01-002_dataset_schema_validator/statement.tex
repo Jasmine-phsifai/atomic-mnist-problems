@@ -1,0 +1,69 @@
+\problemstart{AP-01-002}{Executable Dataset Schema}{Difficulty 2/5}{Chapter 1 \textbullet\ numpy}{Turn shape, dtype, range, cardinality, and label assumptions into one fail-fast boundary.}
+
+        \subsection{Mathematical statement}
+
+
+For a split $S=(X,y)$, the intended set is
+\[
+\begin{gathered}
+X\in\{0,\ldots,255\}^{N\times 28\times 28},\qquad
+y\in\{0,\ldots,9\}^{N},\\
+\bm c=(c_0,\ldots,c_9)^\top,\qquad
+c_j=\sum_{i=1}^{N}\mathbf 1[y_i=j],\qquad
+\sum_{j=0}^{9}c_j=N.
+\end{gathered}
+\]
+The validator is a decision procedure for membership in this set, followed by a
+small diagnostic map $S\mapsto(N,\bm c,\min X,\max X)$.
+
+
+        \subsection{Code problem}
+
+
+Implement \code{validate\_split}.\newline
+On success, return a dictionary containing \code{n}, \code{image\_shape},
+\code{image\_dtype}, and \code{label\_dtype}; plus \code{pixel\_min},
+\code{pixel\_max}, and a length-10 \code{class\_counts} array.
+On the first violated contract, raise \code{ValueError} with a useful
+message.  An optional \code{expected\_size} adds an exact cardinality check.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def validate_split(images: np.ndarray, labels: np.ndarray, *, expected_size: int | None = None) -> dict[str, object]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} The notation $X\in\mathbb{R}^{N\times 28\times28}$ omits storage dtype, paired cardinality, admissible integer labels, and corrupt pixel ranges.
+
+        \textbf{Implicit gap exposed by the result.} Each single-fault fixture is numerically array-like; only an executable schema prevents the defect from surfacing later as a misleading model error.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item A balanced fixture returns exact counts and metadata.
+  \item Wrong rank/extent, mismatched cardinality, non-uint8 images, non-integral labels, out-of-range labels, and wrong expected size all fail.
+  \item The benchmark reports a violation vector rather than compressing data quality into one arbitrary score.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Do not coerce bad inputs into compliance.
+  \item Accept signed or unsigned integer label dtypes, but not floating labels such as $1.0$.
+  \item Keep validation independent of any framework tensor type.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_preliminaries/ndarray.html}{D2L: Data Manipulation}
+  \item \href{https://arxiv.org/abs/1908.01242}{Kannada-MNIST paper}
+        \end{itemize}
+        \end{sourcebox}

@@ -1,0 +1,67 @@
+\problemstart{AP-02-004}{Sparse Cross-Entropy Directly From Logits}{Difficulty 4/5}{Chapter 2 \textbullet\ numpy}{Compute per-example negative log-likelihood without materializing one-hot targets or taking the log of rounded probabilities.}
+
+        \subsection{Mathematical statement}
+
+
+For class label $y_i$ and logits $\bm z_i$, the fused loss is
+\[
+\begin{aligned}
+\ell_i
+  &=-\log\frac{e^{z_{i,y_i}}}{\sum_{k=1}^{K}e^{z_{ik}}}\\
+  &=\operatorname{LSE}(\bm z_i)-z_{i,y_i},\\
+\operatorname{LSE}(\bm z_i)
+  &=m_i+\log\sum_{k=1}^{K}e^{z_{ik}-m_i}.
+\end{aligned}
+\]
+The mean reduction is $N^{-1}\sum_i\ell_i$; \code{none} returns the vector.
+
+
+        \subsection{Code problem}
+
+
+Implement stable sparse cross-entropy for rank-two float logits and integer
+labels.  Support exactly \code{reduction="none"} and \code{"mean"}.  Use
+advanced indexing to gather true-class logits; do not construct one-hot labels,
+probabilities, or call SciPy's finished loss/logsumexp routine.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def sparse_cross_entropy(logits: np.ndarray, labels: np.ndarray, *, reduction: str = "mean") -> np.ndarray | float:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} The negative log-likelihood is one mathematical expression, while an implementation chooses whether to fuse normalization/logarithm, represent targets densely, and define reduction.
+
+        \textbf{Implicit gap exposed by the result.} A true class with rounded softmax probability zero makes \code{-log(p)} infinite, while the logit-domain loss remains finite and informative.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Per-example losses agree with a SciPy \code{logsumexp} oracle for extreme logits.
+  \item Mean equals the float64 mean of the returned loss vector.
+  \item The benchmark reports naive non-finite count and fused-oracle error separately.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Do not call \code{stable\_softmax} from the preceding problem; implement the fused loss path.
+  \item Do not add epsilon or clip probabilities.
+  \item Validate paired batch size, class count, label dtype/domain, and reduction name.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_linear-classification/softmax-regression.html}{D2L: Softmax Regression}
+  \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.logsumexp.html}{SciPy: logsumexp}
+  \item \href{https://cs231n.github.io/linear-classify/}{Stanford CS231n: Linear Classification}
+        \end{itemize}
+        \end{sourcebox}

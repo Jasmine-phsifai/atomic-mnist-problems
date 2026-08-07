@@ -1,0 +1,66 @@
+\problemstart{AP-01-011}{NumPy to PyTorch: Shared View Versus Owned Copy}{Difficulty 3/5}{Chapter 1 \textbullet\ pytorch}{Construct two value-equal CPU tensors with deliberately different storage ownership and prove it by mutation.}
+
+        \subsection{Mathematical statement}
+
+
+For a NumPy array $A$, construct tensors $T_s,T_o$ satisfying
+\[
+\begin{gathered}
+\operatorname{value}(T_s)=\operatorname{value}(T_o)=A,\\
+\operatorname{storage}(T_s)\sim\operatorname{storage}(A),\qquad
+\operatorname{storage}(T_o)\not\sim\operatorname{storage}(A).
+\end{gathered}
+\]
+The relation $\sim$ is observed through bidirectional mutation, not inferred
+from equal values or printed representations.
+
+
+        \subsection{Code problem}
+
+
+Using official PyTorch conversion APIs, return a shared CPU tensor and an owned
+CPU tensor.  Preserve shape and supported NumPy dtype.  Reject non-writeable or
+non-C-contiguous inputs so the educational alias contract remains unambiguous.
+Do not move either tensor to a GPU in this problem.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def numpy_to_torch_pair(array: np.ndarray) -> tuple[torch.Tensor, torch.Tensor]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Equality in a vector space does not encode storage aliasing, device placement, writeability, or which runtime owns the lifetime.
+
+        \textbf{Implicit gap exposed by the result.} The four-way mutation probe distinguishes \code{torch.from\_numpy} from copy construction even though dtype, shape, and initial values match.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item NumPy mutation reaches only the shared tensor; shared-tensor mutation reaches NumPy.
+  \item Owned-tensor mutation reaches neither NumPy nor the shared tensor.
+  \item Both tensors remain on CPU and preserve float32 dtype and shape.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use \code{torch.from\_numpy} (or documented equivalent) for sharing and an explicit copy API for ownership.
+  \item No DLPack, GPU transfer, autograd, or model code.
+  \item Install the pinned PyTorch CPU environment to run this problem.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://docs.pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html}{PyTorch: Tensors}
+  \item \href{https://docs.pytorch.org/docs/stable/generated/torch.from_numpy.html}{PyTorch: torch.from\_numpy}
+  \item \href{https://numpy.org/doc/stable/user/basics.copies.html}{NumPy: Copies and views}
+        \end{itemize}
+        \end{sourcebox}

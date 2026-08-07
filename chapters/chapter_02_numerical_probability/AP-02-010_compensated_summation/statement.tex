@@ -1,0 +1,69 @@
+\problemstart{AP-02-010}{Compensated Summation Recovers Lost Increments}{Difficulty 3/5}{Chapter 2 \textbullet\ numpy}{Implement Kahan accumulation and measure order sensitivity against high-accuracy and library reductions.}
+
+        \subsection{Mathematical statement}
+
+
+Ordinary sequential accumulation applies
+\[
+  s_{k+1}=\operatorname{fl}(s_k+x_k).
+\]
+Kahan summation carries a compensation $c_k$ for low-order information:
+\[
+\begin{aligned}
+y_k&=x_k-c_k,\\
+t_k&=\operatorname{fl}(s_k+y_k),\\
+c_{k+1}&=\operatorname{fl}((t_k-s_k)-y_k),\\
+s_{k+1}&=t_k.
+\end{aligned}
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement Kahan summation for a nonempty one-dimensional finite float64 array,
+returning a Python float.  This explicit scalar loop is intentional: the problem
+studies accumulation state.  Compare against Python \code{sum}, NumPy
+\code{sum}, and \code{math.fsum}; do not claim Kahan is correctly rounded for
+every adversarial sequence.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def kahan_sum(values: np.ndarray) -> float:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Associativity of real addition fails after rounding, so a reduction depends on order and algorithm despite denoting the same finite sum.
+
+        \textbf{Implicit gap exposed by the result.} Many increments smaller than the current ULP vanish under sequential addition but reappear through compensation; reversed order changes the naive result.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item A small-increment fixture is closer to \code{math.fsum} than sequential Python accumulation.
+  \item Simple exactly representable sums still match exactly.
+  \item The benchmark prints signed errors and order sensitivity for each reduction separately.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use the stated Kahan recurrence; do not call \code{math.fsum} or \code{np.sum} inside the learner function.
+  \item The scalar loop is pedagogically justified and needs no C extension at this scale.
+  \item Reject empty, non-vector, non-float64, or nonfinite input.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://docs.python.org/3/library/math.html#math.fsum}{Python: math.fsum}
+  \item \href{https://numpy.org/doc/stable/reference/generated/numpy.finfo.html}{NumPy: numpy.finfo}
+        \end{itemize}
+        \end{sourcebox}

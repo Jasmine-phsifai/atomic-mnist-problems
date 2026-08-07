@@ -1,0 +1,253 @@
+version = "0.1.0"
+
+[[problem]]
+id = "AP-01-001"
+chapter = 1
+slug = "npz_loader_contract"
+title = "A Trust-Bounded NPZ Loader"
+difficulty = 2
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-001_npz_loader_contract"
+
+[[problem]]
+id = "AP-01-002"
+chapter = 1
+slug = "dataset_schema_validator"
+title = "Executable Dataset Schema"
+difficulty = 2
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-002_dataset_schema_validator"
+
+[[problem]]
+id = "AP-01-003"
+chapter = 1
+slug = "safe_pixel_normalization"
+title = "Pixel Normalization Without Integer Surprises"
+difficulty = 2
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-003_safe_pixel_normalization"
+
+[[problem]]
+id = "AP-01-004"
+chapter = 1
+slug = "reshape_view_copy_contract"
+title = "Flattening: Shape Is Not Ownership"
+difficulty = 3
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-004_reshape_view_copy_contract"
+
+[[problem]]
+id = "AP-01-005"
+chapter = 1
+slug = "broadcasting_axis_contract"
+title = "Broadcasting With a Named Feature Axis"
+difficulty = 3
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-005_broadcasting_axis_contract"
+
+[[problem]]
+id = "AP-01-006"
+chapter = 1
+slug = "stratified_split_allocation"
+title = "Deterministic Stratification by Integer Apportionment"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-006_stratified_split_allocation"
+
+[[problem]]
+id = "AP-01-007"
+chapter = 1
+slug = "batch_iterator_last_batch"
+title = "A Minibatch Iterator With an Explicit Tail Policy"
+difficulty = 3
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-007_batch_iterator_last_batch"
+
+[[problem]]
+id = "AP-01-008"
+chapter = 1
+slug = "sample_weighted_metric_reduction"
+title = "Epoch Means Are Sample-Weighted"
+difficulty = 2
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-008_sample_weighted_metric_reduction"
+
+[[problem]]
+id = "AP-01-009"
+chapter = 1
+slug = "sparse_onehot_memory"
+title = "Sparse Labels and One-Hot Storage"
+difficulty = 2
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-009_sparse_onehot_memory"
+
+[[problem]]
+id = "AP-01-010"
+chapter = 1
+slug = "split_fingerprint_leakage"
+title = "Content Fingerprints for Split Leakage"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_01_data_contracts/AP-01-010_split_fingerprint_leakage"
+
+[[problem]]
+id = "AP-01-011"
+chapter = 1
+slug = "pytorch_numpy_alias_boundary"
+title = "NumPy to PyTorch: Shared View Versus Owned Copy"
+difficulty = 3
+framework = "pytorch"
+path = "chapters/chapter_01_data_contracts/AP-01-011_pytorch_numpy_alias_boundary"
+
+[[problem]]
+id = "AP-01-012"
+chapter = 1
+slug = "tensorflow_numpy_snapshot_boundary"
+title = "NumPy to TensorFlow: A Snapshot Boundary"
+difficulty = 3
+framework = "tensorflow"
+path = "chapters/chapter_01_data_contracts/AP-01-012_tensorflow_numpy_snapshot_boundary"
+
+[[problem]]
+id = "AP-02-001"
+chapter = 2
+slug = "ulp_spacing_map"
+title = "Map the Floating-Point Lattice"
+difficulty = 2
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-001_ulp_spacing_map"
+
+[[problem]]
+id = "AP-02-002"
+chapter = 2
+slug = "stable_softplus"
+title = "Stable Softplus Across Extreme Inputs"
+difficulty = 3
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-002_stable_softplus"
+
+[[problem]]
+id = "AP-02-003"
+chapter = 2
+slug = "stable_softmax"
+title = "Softmax With Shift Invariance and a Named Axis"
+difficulty = 3
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-003_stable_softmax"
+
+[[problem]]
+id = "AP-02-004"
+chapter = 2
+slug = "sparse_cross_entropy_logits"
+title = "Sparse Cross-Entropy Directly From Logits"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-004_sparse_cross_entropy_logits"
+
+[[problem]]
+id = "AP-02-005"
+chapter = 2
+slug = "entropy_kl_boundaries"
+title = "Entropy and KL at the Boundary of the Simplex"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-005_entropy_kl_boundaries"
+
+[[problem]]
+id = "AP-02-006"
+chapter = 2
+slug = "label_smoothing_contract"
+title = "Label Smoothing Is a Convention, Not a Slogan"
+difficulty = 3
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-006_label_smoothing_contract"
+
+[[problem]]
+id = "AP-02-007"
+chapter = 2
+slug = "softmax_ce_analytic_gradient"
+title = "Derive and Implement the Softmax-Loss Gradient"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-007_softmax_ce_analytic_gradient"
+
+[[problem]]
+id = "AP-02-008"
+chapter = 2
+slug = "finite_difference_step_sweep"
+title = "The Finite-Difference Step Has a U-Curve"
+difficulty = 3
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-008_finite_difference_step_sweep"
+
+[[problem]]
+id = "AP-02-009"
+chapter = 2
+slug = "directional_gradient_check"
+title = "A Random Direction Checks the Whole Gradient"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-009_directional_gradient_check"
+
+[[problem]]
+id = "AP-02-010"
+chapter = 2
+slug = "compensated_summation"
+title = "Compensated Summation Recovers Lost Increments"
+difficulty = 3
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-010_compensated_summation"
+
+[[problem]]
+id = "AP-02-011"
+chapter = 2
+slug = "welford_online_variance"
+title = "One-Pass Variance Without Catastrophic Cancellation"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-011_welford_online_variance"
+
+[[problem]]
+id = "AP-02-012"
+chapter = 2
+slug = "exponent_range_audit"
+title = "Find the Exponential Overflow Frontier"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-012_exponent_range_audit"
+
+[[problem]]
+id = "AP-02-013"
+chapter = 2
+slug = "minibatch_gradient_estimator"
+title = "Measure Minibatch Gradient Unbiasedness and Variance"
+difficulty = 5
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-013_minibatch_gradient_estimator"
+
+[[problem]]
+id = "AP-02-014"
+chapter = 2
+slug = "initialization_variance_propagation"
+title = "Initialization by Propagated Energy"
+difficulty = 4
+framework = "numpy"
+path = "chapters/chapter_02_numerical_probability/AP-02-014_initialization_variance_propagation"
+
+[[problem]]
+id = "AP-02-015"
+chapter = 2
+slug = "pytorch_cross_entropy_semantics"
+title = "PyTorch Cross-Entropy: Logits, Labels, Reduction, Gradient"
+difficulty = 4
+framework = "pytorch"
+path = "chapters/chapter_02_numerical_probability/AP-02-015_pytorch_cross_entropy_semantics"
+
+[[problem]]
+id = "AP-02-016"
+chapter = 2
+slug = "tensorflow_cross_entropy_semantics"
+title = "TensorFlow Cross-Entropy: GradientTape and Logit Semantics"
+difficulty = 4
+framework = "tensorflow"
+path = "chapters/chapter_02_numerical_probability/AP-02-016_tensorflow_cross_entropy_semantics"

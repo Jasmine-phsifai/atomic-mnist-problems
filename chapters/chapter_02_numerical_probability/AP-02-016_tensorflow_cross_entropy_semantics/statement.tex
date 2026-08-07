@@ -1,0 +1,65 @@
+\problemstart{AP-02-016}{TensorFlow Cross-Entropy: GradientTape and Logit Semantics}{Difficulty 4/5}{Chapter 2 \textbullet\ tensorflow}{Reproduce the same mathematical loss through TensorFlow while making tape watching, reduction, and from-logits semantics explicit.}
+
+        \subsection{Mathematical statement}
+
+
+For the same $Z,y$ contract as the PyTorch problem, obtain
+\[
+  \bm\ell=\operatorname{SparseSoftmaxCE}(Z,y),\qquad
+  \bar\ell=\frac1N\sum_i\ell_i,\qquad
+  G=\frac{\partial\bar\ell}{\partial Z}.
+\]
+The tensor watched by the gradient tape is float64; labels are int64; the
+unreduced fused operator consumes logits.
+
+
+        \subsection{Code problem}
+
+
+Implement a CPU-compatible eager TensorFlow probe.  Convert logits to a watched
+\code{tf.Variable} and labels to an int64 tensor.\newline
+Use TensorFlow's official sparse-softmax cross-entropy operator, reduce by mean
+inside \code{tf.GradientTape}, and return owned NumPy snapshots under the same three
+keys as the PyTorch problem.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def tensorflow_cross_entropy_probe(logits: np.ndarray, labels: np.ndarray) -> dict[str, object]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Equivalent calculus does not imply identical framework mechanics: TensorFlow uses tape scope/watch semantics and a separate reduction operation around an unreduced fused loss.
+
+        \textbf{Implicit gap exposed by the result.} Feeding probabilities while declaring them logits again produces a finite wrong answer, demonstrating a cross-framework semantic hazard rather than a numerical exception.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Loss vector, mean, and gradient agree with the same stable SciPy/NumPy oracle used for PyTorch.
+  \item The tape returns a non-null gradient with matching float64 shape.
+  \item The benchmark reports the finite probability-as-logits discrepancy and oracle error separately.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use eager TensorFlow float64 on CPU-compatible operations; no Keras model, optimizer, dataset, or GPU requirement.
+  \item Use the official fused TensorFlow op rather than rebuilding it.
+  \item Return copied NumPy arrays and a Python float.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://www.tensorflow.org/api_docs/python/tf/nn/sparse_softmax_cross_entropy_with_logits}{TensorFlow: sparse softmax cross entropy}
+  \item \href{https://www.tensorflow.org/guide/autodiff}{TensorFlow: Introduction to gradients}
+  \item \href{https://www.tensorflow.org/guide/basic_training_loops}{TensorFlow: Basic training loops}
+        \end{itemize}
+        \end{sourcebox}

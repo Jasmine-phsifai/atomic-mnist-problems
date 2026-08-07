@@ -1,0 +1,25 @@
+generated_at = "2026-08-07"
+
+[[source]]
+name = "Dive into Deep Learning"
+version = "1.0.3"
+commit = "23d7a5aecceee57d1292c56e90cce307f183bb0a"
+url = "https://github.com/d2l-ai/d2l-en"
+
+[[source]]
+name = "PyTorch Tutorials"
+version = "2.13 documentation snapshot"
+commit = "4d66ab3f9226b7e712b725f9cf0f03fe5b0f1531"
+url = "https://github.com/pytorch/tutorials"
+
+[[source]]
+name = "TensorFlow Docs"
+version = "2.21 documentation snapshot"
+commit = "35e0922e059d7bc6d515a83e03a7494f0640c314"
+url = "https://github.com/tensorflow/docs"
+
+[[source]]
+name = "Kannada-MNIST"
+version = "paper v1 / upstream master observed 2026-08-07"
+commit = ""
+url = "https://github.com/vinayprabhu/Kannada_MNIST"

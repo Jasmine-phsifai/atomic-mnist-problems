@@ -1,0 +1,66 @@
+\problemstart{AP-01-003}{Pixel Normalization Without Integer Surprises}{Difficulty 2/5}{Chapter 1 \textbullet\ numpy}{Map uint8 pixels to an explicit floating interval without aliasing or mutating the source.}
+
+        \subsection{Mathematical statement}
+
+
+The intended real map is
+\[
+  \phi:\{0,\ldots,255\}\to[0,1],\qquad \phi(a)=\frac{a}{255}.
+\]
+For an array $X$, require an output $Z$ satisfying
+\[
+  Z_{ijk}=\operatorname{fl}_{\tau}\!\left(\frac{X_{ijk}}{255}\right),
+  \quad Z\not\equiv X\text{ in storage},
+  \quad X_{\mathrm{after}}=X_{\mathrm{before}},
+\]
+where $\tau\in\{\texttt{float32},\texttt{float64}\}$ is selected explicitly.
+
+
+        \subsection{Code problem}
+
+
+Implement normalization with an explicit floating dtype.  Reject unsupported
+input and output dtypes, preserve shape, do not mutate or share storage with the
+source, and make the cast/division order obvious.  The function must work for
+non-contiguous inputs as well as ordinary image batches.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def normalize_uint8(images: np.ndarray, *, dtype: np.dtype | type = np.float32) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Real division is closed in $\mathbb R$; machine expressions also choose an input dtype, ufunc casting rule, allocation policy, and rounding format.
+
+        \textbf{Implicit gap exposed by the result.} Endpoint, adjacent-level, alias, and source-snapshot checks reveal integer truncation, overflow-prone preprocessing, or accidental in-place mutation.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item The values $0,1,254,255$ map to correctly rounded floating values and preserve all 256 distinguishable levels.
+  \item Maximum absolute error against a float64 oracle is printed separately from interval and alias checks.
+  \item The source checksum and bytes are unchanged.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use NumPy arithmetic; do not loop over pixels.
+  \item Accept only \code{uint8} input and \code{float32}/\code{float64} output.
+  \item Do not apply dataset mean/variance standardization in this problem.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_preliminaries/ndarray.html}{D2L: Data Manipulation}
+  \item \href{https://numpy.org/doc/stable/user/basics.copies.html}{NumPy: Copies and views}
+        \end{itemize}
+        \end{sourcebox}

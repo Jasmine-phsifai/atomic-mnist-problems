@@ -1,0 +1,68 @@
+\problemstart{AP-02-006}{Label Smoothing Is a Convention, Not a Slogan}{Difficulty 3/5}{Chapter 2 \textbullet\ numpy}{Implement one precisely stated smoothing convention and observe its entropy and gradient consequences.}
+
+        \subsection{Mathematical statement}
+
+
+This problem fixes the all-class uniform-mixture convention
+\[
+  \tilde{\bm y}_i=(1-\varepsilon)\bm e_{y_i}
+  +\frac{\varepsilon}{K}\bm 1_K,
+  \qquad 0\le\varepsilon\le1.
+\]
+Thus
+\[
+\tilde y_{i,y_i}=1-\varepsilon+\varepsilon/K,
+\qquad
+\tilde y_{i,k}=\varepsilon/K\;(k\ne y_i).
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement target construction for integer labels, positive class count, and
+float32/float64 output.\newline
+Validate epsilon and the label domain.  The benchmark
+must compare target entropy and the norm of $\bm p-\tilde{\bm y}$ for several
+epsilon values at fixed overconfident logits.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def smooth_targets(labels: np.ndarray, *, num_classes: int, epsilon: float, dtype: np.dtype | type = np.float32) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Different APIs distribute smoothing mass over all classes or only incorrect classes; the phrase ``label smoothing'' alone is mathematically under-specified.
+
+        \textbf{Implicit gap exposed by the result.} At identical logits, increasing epsilon raises target entropy and changes the gradient vector, revealing that smoothing is part of the objective rather than data decoration.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Entries and row sums match the stated all-class convention exactly for epsilon $0$, an interior value, and $1$.
+  \item Invalid labels, dtype, class count, or epsilon fail.
+  \item The benchmark prints target entropy and gradient norm as separate response curves.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use vectorized NumPy operations.
+  \item Do not import a framework label-smoothing helper.
+  \item Do not substitute the alternative $\varepsilon/(K-1)$ convention.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_linear-classification/softmax-regression.html}{D2L: Softmax Regression}
+  \item \href{https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.cross_entropy.html}{PyTorch: cross\_entropy}
+        \end{itemize}
+        \end{sourcebox}

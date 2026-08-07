@@ -1,0 +1,64 @@
+\problemstart{AP-02-001}{Map the Floating-Point Lattice}{Difficulty 2/5}{Chapter 2 \textbullet\ numpy}{Measure the next representable number as a function of magnitude instead of treating machine numbers as dense reals.}
+
+        \subsection{Mathematical statement}
+
+
+For a floating format $\tau$ and nonnegative representable $x$, define the local
+forward spacing
+\[
+  \operatorname{ulp}_{\tau}^{+}(x)
+  =\operatorname{nextafter}_{\tau}(x,+\infty)-x.
+\]
+Within a normal binade $[2^e,2^{e+1})$, the spacing is piecewise constant and
+scales as $2^{e-p+1}$ for precision $p$.  At zero it equals the smallest positive
+subnormal number.
+
+
+        \subsection{Code problem}
+
+
+Implement \code{local\_spacing} for finite nonnegative values and one requested
+NumPy floating dtype.  Cast the values first, then compute the forward neighbor
+in the same dtype.  Return spacings in that dtype and reject integer dtypes,
+negative values, NaN, and infinity.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def local_spacing(values: np.ndarray, *, dtype: np.dtype | type) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Mathematical analysis assumes arbitrarily close reals; a floating format is a magnitude-dependent discrete lattice with subnormal and normal regimes.
+
+        \textbf{Implicit gap exposed by the result.} The log--log staircase and the zero-spacing observation show why one universal absolute tolerance cannot describe all magnitudes or dtypes.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Every result equals an independently computed same-dtype \code{nextafter} difference.
+  \item Spacing is positive, zero uses the smallest subnormal, and powers of two expose jumps.
+  \item The benchmark draws three dtype curves and prints spacing ratios; interpretation replaces a fabricated pass threshold.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use NumPy's \code{nextafter}; do not manipulate IEEE bit fields.
+  \item Support float16, float32, and float64.
+  \item This is a measurement problem, not an implementation of floating-point arithmetic.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/reference/generated/numpy.finfo.html}{NumPy: numpy.finfo}
+  \item \href{https://numpy.org/doc/stable/reference/generated/numpy.nextafter.html}{NumPy: numpy.nextafter}
+        \end{itemize}
+        \end{sourcebox}

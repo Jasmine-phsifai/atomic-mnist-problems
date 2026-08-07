@@ -1,0 +1,70 @@
+\problemstart{AP-02-014}{Initialization by Propagated Energy}{Difficulty 4/5}{Chapter 2 \textbullet\ numpy}{Implement Xavier/He normal scales and judge them by measured second-moment propagation, not parameter histograms alone.}
+
+        \subsection{Mathematical statement}
+
+
+For $W\in\mathbb R^{d_{\mathrm{in}}\times d_{\mathrm{out}}}$, use
+\[
+\begin{aligned}
+W_{ij}^{\mathrm{Xavier}}&\sim\mathcal N\!\left(0,\frac{2}{d_{\mathrm{in}}+d_{\mathrm{out}}}\right),\\
+W_{ij}^{\mathrm{He}}&\sim\mathcal N\!\left(0,\frac{2}{d_{\mathrm{in}}}\right).
+\end{aligned}
+\]
+For equal fan-in/out and standardized independent inputs, examine the energy
+ratios
+\[
+R_X=\frac{E[(XW_X)^2]}{E[X^2]},\qquad
+R_H=\frac{E[\operatorname{ReLU}(XW_H)^2]}{E[X^2]}.
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement exactly two schemes, \code{"xavier\_normal"} and
+\code{"he\_normal"}.\newline
+Use a caller-owned NumPy generator and return float64 shape
+$(d_{\mathrm{in}},d_{\mathrm{out}})$.  The benchmark evaluates propagated second
+moments over many random inputs and reports a confidence interval from repeated
+trials.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def initialize_weights(fan_in: int, fan_out: int, *, scheme: str, rng: np.random.Generator) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} A variance formula is an ensemble statement; finite matrices, activation nonlinearities, fan conventions, RNG ownership, and the chosen diagnostic determine engineering behavior.
+
+        \textbf{Implicit gap exposed by the result.} The same weight scale that preserves linear energy does not preserve post-ReLU energy; the correct scale depends on the downstream operation.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Shape, dtype, reproducibility, and empirical weight standard deviation are checked.
+  \item For a deterministic large trial, Xavier-linear and He-ReLU energy ratios lie in the documented broad $[0.90,1.10]$ educational envelope.
+  \item The benchmark prints repeated-trial mean and spread, making sampling noise visible rather than hiding it behind one pass/fail number.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use \code{rng.normal}; do not use framework initializers.
+  \item Do not seed inside the function or touch global RNG state.
+  \item No C extension: matrix multiplication is already a library kernel and the atomic task is scale selection.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_multilayer-perceptrons/numerical-stability-and-init.html}{D2L: Numerical Stability and Initialization}
+  \item \href{https://cs231n.github.io/neural-networks-2/}{Stanford CS231n: Weight Initialization}
+        \end{itemize}
+        \end{sourcebox}

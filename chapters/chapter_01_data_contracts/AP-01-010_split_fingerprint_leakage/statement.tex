@@ -1,0 +1,67 @@
+\problemstart{AP-01-010}{Content Fingerprints for Split Leakage}{Difficulty 4/5}{Chapter 1 \textbullet\ numpy}{Detect byte-identical examples crossing a train/validation boundary without relying on object identity.}
+
+        \subsection{Mathematical statement}
+
+
+Let $h$ be a collision-resistant digest over a row's dtype, shape, and canonical
+C-order bytes.  Define
+\[
+  H(X)_i=h(\operatorname{dtype}(X_i)\,\|\,\operatorname{shape}(X_i)\,\|\,\operatorname{bytes}(X_i))
+\]
+and the cross-split leakage relation
+\[
+  \mathcal D=\{(i,j):H(X^{\mathrm{train}})_i=H(X^{\mathrm{valid}})_j\}.
+\]
+The diagnostic rate is $\rho=|\{j:\exists i,(i,j)\in\mathcal D\}|/N_{\mathrm{valid}}$.
+
+
+        \subsection{Code problem}
+
+
+Implement row fingerprints with SHA-256 from the Python standard library, then
+return all sorted train/validation duplicate index pairs.  Canonicalize each row
+to C-order and include dtype plus shape in the digest domain.  The function is a
+data-quality diagnostic, not a cryptographic authentication protocol.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def fingerprint_rows(array: np.ndarray) -> np.ndarray:
+
+def cross_split_duplicates(train: np.ndarray, valid: np.ndarray) -> list[tuple[int, int]]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Disjoint index sets do not imply disjoint observed content; equality of values is separate from identity of array objects or memory addresses.
+
+        \textbf{Implicit gap exposed by the result.} A copied row has no shared memory and a different index yet still triggers the digest relation, exposing leakage hidden by index-only checks.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Known copied rows produce the exact sorted pair list, including repeated duplicates.
+  \item Changing one pixel changes the digest; changing dtype also changes the digest domain.
+  \item The benchmark prints duplicate-pair count, affected-validation count, and leakage rate separately.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use \code{hashlib.sha256}; do not invent a hash function.
+  \item A Python row loop is acceptable here because hashing is a per-record boundary, not a numerical kernel.
+  \item Reject rank-zero arrays and incompatible trailing row shapes.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/user/basics.copies.html}{NumPy: Copies and views}
+  \item \href{https://arxiv.org/abs/1908.01242}{Kannada-MNIST paper}
+        \end{itemize}
+        \end{sourcebox}

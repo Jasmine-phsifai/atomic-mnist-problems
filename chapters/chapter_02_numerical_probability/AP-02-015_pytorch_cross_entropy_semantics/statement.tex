@@ -1,0 +1,67 @@
+\problemstart{AP-02-015}{PyTorch Cross-Entropy: Logits, Labels, Reduction, Gradient}{Difficulty 4/5}{Chapter 2 \textbullet\ pytorch}{Wrap the official fused loss with explicit dtype/reduction semantics and verify it against a NumPy/SciPy oracle.}
+
+        \subsection{Mathematical statement}
+
+
+For logits $Z$ and sparse labels $y$, the wrapper must return
+\[
+\begin{gathered}
+\bm\ell\in\mathbb R^N,\qquad
+\bar\ell=N^{-1}\bm1_N^\top\bm\ell,\\
+G=\nabla_Z\bar\ell\in\mathbb R^{N\times K}.
+\end{gathered}
+\]
+The input is raw, unnormalized logits.  Labels are integer class indices.  The
+autograd scalar is the mean of the unreduced fused losses.
+
+
+        \subsection{Code problem}
+
+
+Implement a CPU-only PyTorch probe from float64 NumPy logits and int64 labels.
+Create a leaf tensor with gradients enabled, call
+\code{F.cross\_entropy} with \code{reduction="none"}.\newline
+Take its mean, backpropagate once, then return owned NumPy snapshots under keys \code{losses},
+\code{mean\_loss}, and \code{gradient}.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def pytorch_cross_entropy_probe(logits: np.ndarray, labels: np.ndarray) -> dict[str, object]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} The symbol cross-entropy does not state whether inputs are logits/probabilities, labels are sparse/dense, reduction is mean/sum/none, or gradients belong to a leaf tensor.
+
+        \textbf{Implicit gap exposed by the result.} Passing already normalized probabilities to a logit-expecting fused loss returns a finite but different answer, so finiteness alone cannot detect API misuse.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Unreduced losses, mean, and gradient agree with a stable SciPy/NumPy oracle on extreme logits.
+  \item Returned arrays own their memory and have the requested shape/dtype.
+  \item The benchmark prints the double-softmax misuse discrepancy separately from oracle error.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use CPU float64 and sparse int64 labels; no model, optimizer, DataLoader, or GPU.
+  \item Use the official fused PyTorch loss rather than rebuilding it.
+  \item Detach and copy before returning NumPy evidence.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.cross_entropy.html}{PyTorch: cross\_entropy}
+  \item \href{https://docs.pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html}{PyTorch: Automatic Differentiation}
+  \item \href{https://d2l.ai/chapter_linear-classification/softmax-regression.html}{D2L: Softmax Regression}
+        \end{itemize}
+        \end{sourcebox}

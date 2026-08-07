@@ -1,0 +1,62 @@
+\problemstart{AP-01-008}{Epoch Means Are Sample-Weighted}{Difficulty 2/5}{Chapter 1 \textbullet\ numpy}{Aggregate unequal batch means without giving a short tail batch the weight of a full batch.}
+
+        \subsection{Mathematical statement}
+
+
+If batch $j$ has $n_j$ samples and reported mean $m_j$, the epoch mean is
+\[
+  \bar m=\frac{\sum_{j=1}^{B}n_jm_j}{\sum_{j=1}^{B}n_j}.
+\]
+The commonly written expression $B^{-1}\sum_jm_j$ equals $\bar m$ only under
+special conditions, such as equal batch sizes.  Define the aggregation bias
+\[
+  \Delta_{\mathrm{batch}}=\frac1B\sum_jm_j-\bar m.
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement the sample-weighted epoch mean.  Validate one-dimensional, equal-length
+inputs; require positive integer batch sizes and finite means.  Accumulate in
+float64 even when the input means are float32.  Return a Python \code{float}.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def sample_weighted_mean(batch_means: np.ndarray, batch_sizes: np.ndarray) -> float:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} A mean over samples is not the same measure as a mean over batches; the notation must identify which finite set carries uniform weight.
+
+        \textbf{Implicit gap exposed by the result.} A two-sample tail with a deliberately high loss makes the naive estimator's bias visible while all individual batch means remain valid.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item The adversarial $(64,64,2)$ fixture matches the direct per-sample oracle.
+  \item The printed \(\Delta_{\mathrm{batch}}\) is nonzero, while the implementation error is near floating-point roundoff.
+  \item Invalid sizes, NaN means, and shape mismatches fail explicitly.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Do not reconstruct per-sample arrays in the implementation.
+  \item Use float64 accumulation.
+  \item Do not silently drop zero-sized batches; reject them.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html}{PyTorch: Optimization tutorial}
+        \end{itemize}
+        \end{sourcebox}

@@ -1,0 +1,65 @@
+\problemstart{AP-02-011}{One-Pass Variance Without Catastrophic Cancellation}{Difficulty 4/5}{Chapter 2 \textbullet\ numpy}{Implement Welford's recurrence and contrast it with $E[X^2]-E[X]^2$ on large-offset data.}
+
+        \subsection{Mathematical statement}
+
+
+For observations $x_1,\ldots,x_n$, Welford's recurrence is
+\[
+\begin{aligned}
+\delta_n&=x_n-\mu_{n-1},\\
+\mu_n&=\mu_{n-1}+\delta_n/n,\\
+M_{2,n}&=M_{2,n-1}+\delta_n(x_n-\mu_n),\\
+s^2&=M_{2,n}/(n-\mathrm{ddof}).
+\end{aligned}
+\]
+It avoids subtracting two numbers of order $\mu^2$ to recover a small variance.
+
+
+        \subsection{Code problem}
+
+
+Implement online mean and variance for a nonempty one-dimensional finite float64
+array and \code{ddof} in $\{0,1\}$.  Use one pass and constant auxiliary storage.
+Return two Python floats.  Do not call a library mean/variance inside the learner
+function.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def online_mean_variance(values: np.ndarray, *, ddof: int = 0) -> tuple[float, float]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} The identity $\operatorname{Var}(X)=E[X^2]-E[X]^2$ is exact over reals but can subtract nearly equal rounded quantities in software.
+
+        \textbf{Implicit gap exposed by the result.} Adding a $10^{12}$ offset leaves mathematical variance unchanged yet can destroy the naive one-pass formula; Welford and a centered oracle remain stable.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Mean and variance match NumPy's two-pass oracle on large-offset data for both allowed \code{ddof} values.
+  \item Constant arrays return exactly zero variance rather than a small negative value.
+  \item The benchmark prints naive/Welford errors and offset-invariance error separately.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item One pass, scalar recurrence, constant auxiliary memory.
+  \item No \code{np.mean}, \code{np.var}, or SciPy statistic in \code{starter.py}.
+  \item Reject insufficient sample count when $n\le\mathrm{ddof}$.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_preliminaries/probability.html}{D2L: Probability and Statistics}
+  \item \href{https://numpy.org/doc/stable/reference/generated/numpy.finfo.html}{NumPy: numpy.finfo}
+        \end{itemize}
+        \end{sourcebox}

@@ -1,0 +1,68 @@
+\problemstart{AP-01-006}{Deterministic Stratification by Integer Apportionment}{Difficulty 4/5}{Chapter 1 \textbullet\ numpy}{Convert fractional class proportions into reproducible integer split counts without overlap or sample loss.}
+
+        \subsection{Mathematical statement}
+
+
+Let class $c$ contain $n_c$ samples and request validation fraction $f$.  Define
+the total $V=\operatorname{round}(fN)$ and Hamilton allocation
+\[
+\begin{aligned}
+b_c&=\lfloor fn_c\rfloor, & r_c&=fn_c-b_c,\\
+v_c&=b_c+\mathbf 1[c\text{ receives one of }V-\sum_jb_j
+\text{ largest remainders}].
+\end{aligned}
+\]
+Break equal remainders by smaller class label.  Then sample $v_c$ distinct
+indices per class with a generator owned by the supplied seed.
+
+
+        \subsection{Code problem}
+
+
+Return one-dimensional \code{int64} train and validation index arrays.  Apply
+the exact apportionment above.\newline
+Within each class, shuffle using \code{np.random.default\_rng(seed)}.\newline
+Shuffle each final index array once.
+The outputs must be disjoint, cover every input position exactly once, and be
+bitwise reproducible for a fixed seed.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def stratified_split(labels: np.ndarray, *, valid_fraction: float, seed: int) -> tuple[np.ndarray, np.ndarray]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} A probability $f$ does not say how to allocate indivisible samples, break remainder ties, own randomness, or prove partition invariants.
+
+        \textbf{Implicit gap exposed by the result.} Unequal small class counts expose off-by-one allocation and global-shuffle approaches even when the overall validation fraction looks correct.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Validation class counts equal the specified largest-remainder allocation.
+  \item Intersection size is zero, union size is $N$, and no index is duplicated.
+  \item Same-seed signatures match; a different seed changes membership while preserving allocation.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Do not call a machine-learning split helper.
+  \item Use NumPy's modern \code{Generator}; do not mutate global RNG state.
+  \item Reject empty labels, invalid fractions, non-integer labels, and negative labels.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/reference/random/generator.html}{NumPy: Random Generator}
+  \item \href{https://d2l.ai/chapter_preliminaries/ndarray.html}{D2L: Data Manipulation}
+        \end{itemize}
+        \end{sourcebox}

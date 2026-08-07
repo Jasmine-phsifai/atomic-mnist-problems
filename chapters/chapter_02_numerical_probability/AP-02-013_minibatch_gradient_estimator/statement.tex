@@ -1,0 +1,66 @@
+\problemstart{AP-02-013}{Measure Minibatch Gradient Unbiasedness and Variance}{Difficulty 5/5}{Chapter 2 \textbullet\ numpy}{Sample without replacement from per-example gradients and compare empirical uncertainty with the finite-population formula.}
+
+        \subsection{Mathematical statement}
+
+
+Given per-example gradients $\bm g_i\in\mathbb R^d$, sample a uniform subset
+$B\subset\{1,\ldots,N\}$ of size $b$ without replacement and define
+\[
+\hat{\bm g}_B=\frac1b\sum_{i\in B}\bm g_i,
+\qquad E[\hat{\bm g}_B]=\bar{\bm g}.
+\]
+For coordinate $j$ with finite-population sample variance $S_j^2$,
+\[
+\operatorname{Var}(\hat g_{B,j})=\left(1-\frac bN\right)\frac{S_j^2}{b}.
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement repeated uniform batch-mean sampling with one local NumPy generator.
+Return shape $(R,d)$ in float64.  The tests use a standardized mean discrepancy
+based on the theoretical standard error, rather than demanding arbitrary decimal
+agreement from random samples.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def sample_batch_means(per_sample_gradients: np.ndarray, *, batch_size: int, repeats: int, seed: int) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} An unbiased estimator is a distributional statement, not equality for one minibatch; software additionally chooses replacement policy, RNG state, repetitions, and diagnostics.
+
+        \textbf{Implicit gap exposed by the result.} Empirical variance shrinks with batch size and vanishes at $b=N$ according to the finite-population correction, which an independent-with-replacement mental model misses.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Same-seed samples are identical; a different seed changes them.
+  \item Coordinate mean errors are reported in standard-error units and remain within the stated five-sigma test envelope for a fixed deterministic experiment.
+  \item The benchmark plots empirical/theoretical trace variance over batch size and prints their ratios.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Sample each repeat without replacement via a local \code{Generator}.
+  \item Do not enumerate all subsets and do not use a framework data loader.
+  \item Reject $b>N$, nonpositive repeats, nonfinite values, or non-matrix input.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_preliminaries/probability.html}{D2L: Probability and Statistics}
+  \item \href{https://d2l.ai/chapter_optimization/minibatch-sgd.html}{D2L: Minibatch SGD}
+  \item \href{https://numpy.org/doc/stable/reference/random/generator.html}{NumPy: Random Generator}
+        \end{itemize}
+        \end{sourcebox}

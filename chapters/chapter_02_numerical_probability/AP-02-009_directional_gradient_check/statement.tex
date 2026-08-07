@@ -1,0 +1,66 @@
+\problemstart{AP-02-009}{A Random Direction Checks the Whole Gradient}{Difficulty 4/5}{Chapter 2 \textbullet\ numpy}{Compare $\nabla f(x)^\top d$ with a scalar directional finite difference and report a scale-aware discrepancy.}
+
+        \subsection{Mathematical statement}
+
+
+For nonzero direction $\bm d$, normalize $\hat{\bm d}=\bm d/\|\bm d\|_2$ and
+compare
+\[
+\begin{gathered}
+a=\nabla f(\bm x)^\top\hat{\bm d},\qquad
+n=\frac{f(\bm x+h\hat{\bm d})-f(\bm x-h\hat{\bm d})}{2h},\\
+E_{\mathrm{rel}}=\frac{|a-n|}{\max(1,|a|,|n|)}.
+\end{gathered}
+\]
+One direction compresses a full gradient into one scalar probe; several seeded
+directions provide a distribution of evidence.
+
+
+        \subsection{Code problem}
+
+
+Implement a checker that calls a supplied analytic-gradient function once,
+normalizes the direction, evaluates two copied points, and returns a dictionary
+with \code{analytic}, \code{numeric}, and \code{relative\_error}.  Validate all
+shapes and finite scalar/vector results.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def directional_gradient_check(f, grad, x: np.ndarray, direction: np.ndarray, *, h: float) -> dict[str, float]:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Coordinate equality is expensive in high dimension, while a projection trades localization for broad coverage and introduces randomness/normalization choices.
+
+        \textbf{Implicit gap exposed by the result.} An intentionally corrupted gradient produces a shifted error distribution across random directions even when an unluckily chosen coordinate could miss the defect.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item A quadratic function produces a small scale-aware error and leaves all inputs unchanged.
+  \item Zero direction, shape mismatch, nonfinite values, and invalid step fail.
+  \item The benchmark reports median/max errors for correct and corrupted gradients over the same seeded directions.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use a central directional difference; do not call the coordinate helper from the previous folder.
+  \item The checker may use NumPy but no autograd framework.
+  \item Do not turn one random direction into a universal proof of gradient correctness.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://cs231n.github.io/optimization-1/}{Stanford CS231n: Losses and Optimization}
+  \item \href{https://numpy.org/doc/stable/reference/random/generator.html}{NumPy: Random Generator}
+        \end{itemize}
+        \end{sourcebox}

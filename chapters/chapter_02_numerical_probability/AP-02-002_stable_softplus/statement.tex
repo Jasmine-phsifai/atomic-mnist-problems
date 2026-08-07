@@ -1,0 +1,65 @@
+\problemstart{AP-02-002}{Stable Softplus Across Extreme Inputs}{Difficulty 3/5}{Chapter 2 \textbullet\ numpy}{Evaluate $\log(1+e^x)$ without overflow or loss of the small positive tail.}
+
+        \subsection{Mathematical statement}
+
+
+The softplus function admits the exact identity
+\[
+\begin{aligned}
+\operatorname{softplus}(x)
+  &=\log(1+e^x)\\
+  &=\max(x,0)+\log\!\left(1+e^{-|x|}\right).
+\end{aligned}
+\]
+The second line bounds the exponential argument by zero and uses a log-one-plus
+operation designed for small increments.
+
+
+        \subsection{Code problem}
+
+
+Implement the stable identity elementwise for float32 and float64 arrays.  Keep
+shape and dtype and reject non-floating or non-finite input.\newline
+Do not call \code{np.logaddexp} in the learner implementation; it is reserved as
+the oracle.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def stable_softplus(x: np.ndarray) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Algebraic equality over reals does not preserve overflow, underflow, or relative accuracy after a finite sequence of rounded operations.
+
+        \textbf{Implicit gap exposed by the result.} The $\pm1000$ fixture makes the naive expression overflow while the stable expression stays finite and retains a nonnegative negative-tail value.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Results are finite and agree with \code{np.logaddexp(0,x)} for extreme and near-zero values.
+  \item Monotonicity and nonnegativity are checked independently of oracle agreement.
+  \item The benchmark prints finite-count and maximum-error diagnostics and plots stable versus naive behavior.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use \code{np.maximum}, \code{np.abs}, \code{np.exp}, and \code{np.log1p}.
+  \item Do not clip the input; clipping changes the function.
+  \item Do not use SciPy/NumPy's already fused softplus/logaddexp in the implementation.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/reference/generated/numpy.logaddexp.html}{NumPy: numpy.logaddexp}
+  \item \href{https://d2l.ai/chapter_multilayer-perceptrons/numerical-stability-and-init.html}{D2L: Numerical Stability and Initialization}
+        \end{itemize}
+        \end{sourcebox}

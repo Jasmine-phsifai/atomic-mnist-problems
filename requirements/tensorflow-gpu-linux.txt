@@ -1,0 +1,2 @@
+-r core-cpu.txt
+tensorflow[and-cuda]==2.21.0

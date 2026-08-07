@@ -1,0 +1,68 @@
+\problemstart{AP-01-004}{Flattening: Shape Is Not Ownership}{Difficulty 3/5}{Chapter 1 \textbullet\ numpy}{Implement one flattening API whose caller can request aliasing efficiency or independent storage.}
+
+        \subsection{Mathematical statement}
+
+
+Flattening defines an index bijection
+\[
+  F(X)_{i,,28r+c}=X_{i,r,c},
+  \qquad
+  \begin{aligned}
+  &0\le r,c<28,\\[-0.2em]
+  &F(X)\in\mathbb R^{N\times 784}.
+  \end{aligned}
+\]
+The value equation does not determine the storage relation.  Introduce a policy
+$q\in\{\mathsf{shared},\mathsf{independent}\}$ and satisfy both the value map and
+the requested ownership relation whenever the input is C-contiguous.
+
+
+        \subsection{Code problem}
+
+
+Implement \code{flatten\_images}.  Validate a three-dimensional $28\times28$
+image batch.  With \code{require\_independent=False}, a C-contiguous input must
+produce a zero-copy view.  With it set to true, the output must never share
+memory.  A non-contiguous input must still produce correct row-major values;
+\newline Document that NumPy may need a copy in that case.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def flatten_images(images: np.ndarray, *, require_independent: bool) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} A bijection of indices specifies values but not strides, contiguity, base objects, mutation propagation, or allocation cost.
+
+        \textbf{Implicit gap exposed by the result.} The exact alias truth table and a reversed-stride fixture show why matching shape and values is insufficient evidence.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Output values match the row-major index equation for contiguous and reversed-stride inputs.
+  \item The alias matrix is exactly: contiguous/shared $\mapsto$ true; contiguous/independent $\mapsto$ false.
+  \item The benchmark prints storage bytes and mutation propagation rather than assuming \code{reshape} always returns a view.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use NumPy reshape/copy facilities; do not write index loops.
+  \item Do not call \code{flatten()}, which always copies and erases the policy distinction.
+  \item Reject a batch whose trailing dimensions are not $(28,28)$.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/user/basics.copies.html}{NumPy: Copies and views}
+  \item \href{https://d2l.ai/chapter_preliminaries/ndarray.html}{D2L: Data Manipulation}
+        \end{itemize}
+        \end{sourcebox}

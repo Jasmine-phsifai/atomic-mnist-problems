@@ -1,0 +1,68 @@
+\problemstart{AP-02-005}{Entropy and KL at the Boundary of the Simplex}{Difficulty 4/5}{Chapter 2 \textbullet\ numpy}{Implement the conventions $0\log0=0$ and $p\log(p/0)=+\infty$ without manufacturing NaNs.}
+
+        \subsection{Mathematical statement}
+
+
+For probability vectors $\bm p,\bm q\in\Delta^{K-1}$,
+\[
+\begin{gathered}
+H(\bm p)=-\sum_k p_k\log p_k,\\
+D_{\mathrm{KL}}(\bm p\|\bm q)=\sum_k p_k\log\frac{p_k}{q_k}.
+\end{gathered}
+\]
+Use the measure-theoretic boundary conventions
+\[
+0\log0=0,\qquad 0\log(0/q)=0,\qquad p\log(p/0)=+\infty\;(p>0).
+\]
+
+
+        \subsection{Code problem}
+
+
+Implement entropy and KL along a selected axis.  Validate finite nonnegative
+entries and unit sums to a dtype-aware tolerance.  Use SciPy's \code{xlogy} or
+\code{xlog1py} primitives to encode zero conventions; do not patch NaNs after a
+naive division.  Preserve all non-reduced axes.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def entropy(p: np.ndarray, *, axis: int = -1) -> np.ndarray:
+
+def kl_divergence(p: np.ndarray, q: np.ndarray, *, axis: int = -1) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Interior calculus formulas omit extended-real boundary values and the validation needed to establish that arrays are probability measures.
+
+        \textbf{Implicit gap exposed by the result.} Zeros shared by $p$ and $q$ should contribute exactly zero, while support mismatch must produce infinity rather than NaN or a clipped finite number.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item Point mass, uniform distribution, matching-zero support, and support-mismatch cases have exact expected behavior.
+  \item Random-simplex diagnostics report minimum KL and count of materially negative values.
+  \item Shape and axis preservation are tested separately from scalar examples.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Do not add epsilon, clip probabilities, or renormalize invalid inputs.
+  \item Use natural logarithms.
+  \item At most two functions are present because entropy and KL share the same boundary convention directly.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://d2l.ai/chapter_preliminaries/probability.html}{D2L: Probability and Statistics}
+  \item \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.xlogy.html}{SciPy: xlogy}
+        \end{itemize}
+        \end{sourcebox}

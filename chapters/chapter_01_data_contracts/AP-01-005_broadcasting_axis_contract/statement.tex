@@ -1,0 +1,74 @@
+\problemstart{AP-01-005}{Broadcasting With a Named Feature Axis}{Difficulty 3/5}{Chapter 1 \textbullet\ numpy}{Standardize a batch while making the intended feature axis explicit and rejecting accidental broadcasts.}
+
+        \subsection{Mathematical statement}
+
+
+For $X\in\mathbb R^{N\times D}$ and feature statistics
+$\bm\mu,\bm s\in\mathbb R^D$ with $s_j>0$, compute
+\[
+  Z_{ij}=\frac{X_{ij}-\mu_j}{s_j},
+  \qquad
+  Z=(X-\bm 1_N\bm\mu^\top)\operatorname{diag}(\bm s)^{-1}.
+\]
+The named feature alignment is
+\[
+\bm 1_N\bm\mu^\top=
+\left[\begin{matrix}
+\mu_1 & \cdots & \mu_D\\
+\vdots & \ddots & \vdots\\
+\mu_1 & \cdots & \mu_D
+\end{matrix}\right],
+\]
+not a column of per-example statistics.
+A scalar pair is also admissible.  No other statistic shape belongs to the
+domain, even if NumPy could broadcast it in some accidental configuration.
+
+
+        \subsection{Code problem}
+
+
+Implement feature-wise standardization for a rank-two batch.  Accept each
+statistic only as a scalar or exact shape $(D,)$.  Validate finite means and
+strictly positive finite scales.  Reshape accepted feature vectors to $(1,D)$
+inside the function so the semantic axis is visible in code.
+
+
+        \begin{contractbox}
+        \begin{Code}
+        def standardize_features(x: np.ndarray, mean: np.ndarray | float, scale: np.ndarray | float) -> np.ndarray:
+        \end{Code}
+        \end{contractbox}
+
+        \subsection{Theory--engineering gap inventory}
+
+        \begin{gapbox}
+        \textbf{Explicit gap.} Broadcast compatibility is a syntactic shape relation; it does not prove that the aligned axis has the intended statistical meaning.
+
+        \textbf{Implicit gap exposed by the result.} A square $N=D$ fixture makes row-wise and feature-wise vectors equally broadcastable, so only the specified value oracle distinguishes them.
+        \end{gapbox}
+
+        \subsection{Acceptance evidence}
+
+        \begin{evidencebox}
+        \begin{itemize}
+          \item The square ambiguity fixture matches the feature-axis matrix equation exactly.
+  \item Scalar statistics work; shapes $(N,1)$ and other accidental broadcasts fail.
+  \item The benchmark prints per-feature residual means and an axis-confusion distance.
+        \end{itemize}
+        \end{evidencebox}
+
+        \subsection{Constraints}
+
+        \begin{itemize}
+          \item Use vectorized NumPy broadcasting.
+  \item Do not infer an axis from equal dimension sizes.
+  \item Reject zero, negative, NaN, or infinite scale entries.
+        \end{itemize}
+
+        \begin{sourcebox}
+        This is an atomic adaptation, not copied solution code. Nearest primary sources:
+        \begin{itemize}
+          \item \href{https://numpy.org/doc/stable/user/basics.broadcasting.html}{NumPy: Broadcasting}
+  \item \href{https://d2l.ai/chapter_preliminaries/ndarray.html}{D2L: Data Manipulation}
+        \end{itemize}
+        \end{sourcebox}
