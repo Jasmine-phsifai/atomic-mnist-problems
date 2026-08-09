@@ -25,4 +25,11 @@ def load_npz_array(path: Path, *, expected_key: str) -> np.ndarray:
     - 仅调用 ``np.asarray`` 不能证明对象数组是安全的。
     """
     # TODO: validate suffix, exact key set, and non-object dtype. / 校验后缀、唯一键和非对象类型。
+    suff = path.suffixes
+    if len(suff)==1 and suff[0]=='.npz':
+        with np.load(path,allow_pickle=False) as TempNPZ:
+            if set(TempNPZ.files) == {expected_key}:
+                array = TempNPZ[expected_key]
+                if array.dtype != object :
+                    return array.copy()
     raise NotImplementedError("AP-01-001")
