@@ -40,6 +40,8 @@ entire MNIST training system.
 
 ## Quick start
 
+Linux/macOS:
+
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
@@ -48,6 +50,21 @@ python -m pip install -r requirements/core-cpu.txt
 make validate
 make pdfs
 ```
+
+Windows (PowerShell):
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements\core-cpu.txt
+python tools\validate_scaffold.py
+python tools\build_pdfs.py
+```
+
+`make validate` and `make pdfs` are thin wrappers around the scripts in
+`tools/`. GNU make is optional: on Windows, call the scripts directly as
+shown above. If make is installed, `make PYTHON=python validate` works too.
 
 For a framework boundary problem, install one additional environment file:
 
@@ -76,6 +93,10 @@ case. Keep the downloaded data elsewhere and expose it explicitly:
 
 ```bash
 export MNIST_DATA_DIR=/absolute/path/to/Kannada_MNIST
+```
+
+```powershell
+$env:MNIST_DATA_DIR = "C:\absolute\path\to\Kannada_MNIST"
 ```
 
 No downloader is run implicitly. See `references/DATASET.md` for provenance and

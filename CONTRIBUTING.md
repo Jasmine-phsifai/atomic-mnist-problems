@@ -15,4 +15,6 @@ Keep additions atomic and evidence-driven.
    the problem is specifically about that boundary.
 10. Add a primary-source URL and an adaptation note.
 
-Run `make validate` and `make pdfs` before committing.
+Run `make validate` and `make pdfs` before committing. Without GNU make,
+run `python tools/validate_scaffold.py` and `python tools/build_pdfs.py`
+directly.

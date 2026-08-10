@@ -32,3 +32,7 @@ chapters/**/diagnostic_*.png
 
 # Machine-specific editor settings.
 .vscode/
+
+# Local agent and workflow notes, not part of the public curriculum.
+CLAUDE.md
+.agent.md
