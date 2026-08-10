@@ -21,13 +21,23 @@ class DirectionalCheckTests(unittest.TestCase):
         x = np.array([0.4, -1.2])
         direction = np.array([2.0, -3.0])
         x_snapshot, d_snapshot = x.copy(), direction.copy()
+        grad_calls = []
+
+        def counted_grad(v: np.ndarray) -> np.ndarray:
+            grad_calls.append(1)
+            return matrix @ v
+
         report = directional_gradient_check(
             lambda v: float(0.5 * v @ matrix @ v),
-            lambda v: matrix @ v,
+            counted_grad,
             x,
             direction,
             h=1e-6,
         )
+        self.assertEqual(len(grad_calls), 1)
+        d_hat = direction / np.linalg.norm(direction)
+        expected_analytic = float((matrix @ x) @ d_hat)
+        self.assertAlmostEqual(report["analytic"], expected_analytic, places=12)
         self.assertLess(report["relative_error"], 1e-9)
         self.assertAlmostEqual(report["analytic"], report["numeric"], places=9)
         np.testing.assert_array_equal(x, x_snapshot)
@@ -35,12 +45,24 @@ class DirectionalCheckTests(unittest.TestCase):
 
     def test_rejects_invalid_contract(self) -> None:
         x = np.ones(3)
+        good_f = lambda v: float(v.sum())  # noqa: E731
+        good_grad = lambda v: v  # noqa: E731
         with self.assertRaises(ValueError):
-            directional_gradient_check(lambda v: float(v.sum()), lambda v: v, x, np.zeros(3), h=1e-5)
+            directional_gradient_check(good_f, good_grad, x, np.zeros(3), h=1e-5)
         with self.assertRaises(ValueError):
-            directional_gradient_check(lambda v: float(v.sum()), lambda v: v, x, np.ones(2), h=1e-5)
+            directional_gradient_check(good_f, good_grad, x, np.ones(2), h=1e-5)
         with self.assertRaises(ValueError):
-            directional_gradient_check(lambda v: float(v.sum()), lambda v: v, x, np.ones(3), h=0.0)
+            directional_gradient_check(good_f, good_grad, x, np.ones(3), h=0.0)
+        with self.assertRaises(ValueError):
+            directional_gradient_check(good_f, good_grad, x, np.ones(3), h=-1e-5)
+        with self.assertRaises(ValueError):
+            directional_gradient_check(good_f, good_grad, np.array([1.0, np.nan, 1.0]), np.ones(3), h=1e-5)
+        with self.assertRaises(ValueError):
+            directional_gradient_check(good_f, good_grad, x, np.array([1.0, np.inf, 1.0]), h=1e-5)
+        with self.assertRaises(ValueError):
+            directional_gradient_check(good_f, lambda v: np.array([np.nan, 0.0, 0.0]), x, np.ones(3), h=1e-5)
+        with self.assertRaises(ValueError):
+            directional_gradient_check(lambda v: float("nan"), good_grad, x, np.ones(3), h=1e-5)
 
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ probabilities, or call SciPy's finished loss/logsumexp routine.
         \begin{itemize}
           \item Per-example losses agree with a SciPy \code{logsumexp} oracle for extreme logits.
   \item Mean equals the float64 mean of the returned loss vector.
-  \item The benchmark reports naive non-finite count and fused-oracle error separately.
+  \item The benchmark reports naive non-finite count and fused-oracle error separately. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -54,7 +54,7 @@ probabilities, or call SciPy's finished loss/logsumexp routine.
         \begin{itemize}
           \item Do not call \code{stable\_softmax} from the preceding problem; implement the fused loss path.
   \item Do not add epsilon or clip probabilities.
-  \item Validate paired batch size, class count, label dtype/domain, and reduction name.
+  \item Validate rank-two logits, paired batch size, class count, label dtype/domain, and reduction name, rejecting violations with \code{ValueError}.
         \end{itemize}
 
         \begin{sourcebox}

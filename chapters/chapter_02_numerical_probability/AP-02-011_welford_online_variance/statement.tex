@@ -42,9 +42,9 @@ function.
 
         \begin{evidencebox}
         \begin{itemize}
-          \item Mean and variance match NumPy's two-pass oracle on large-offset data for both allowed \code{ddof} values.
+          \item Mean and variance match NumPy's two-pass oracle on large-offset data for both allowed \code{ddof} values, to within \(5\times10^{-2}\) for the mean (at the \(10^{12}\) offset scale) and \(10^{-3}\) for the variance; a faithful one-pass float64 recurrence drifts about \(2\times10^{-2}\) and \(1.2\times10^{-4}\) respectively on this fixture, while the naive \(E[X^2]-E[X]^2\) formula errs by about \(10^{11}\).
   \item Constant arrays return exactly zero variance rather than a small negative value.
-  \item The benchmark prints naive/Welford errors and offset-invariance error separately.
+  \item The benchmark prints naive/Welford errors and offset-invariance error separately. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -53,7 +53,7 @@ function.
         \begin{itemize}
           \item One pass, scalar recurrence, constant auxiliary memory.
   \item No \code{np.mean}, \code{np.var}, or SciPy statistic in \code{starter.py}.
-  \item Reject insufficient sample count when $n\le\mathrm{ddof}$.
+  \item Reject out-of-domain input and insufficient sample count ($n\le\mathrm{ddof}$) with \code{ValueError}.
         \end{itemize}
 
         \begin{sourcebox}

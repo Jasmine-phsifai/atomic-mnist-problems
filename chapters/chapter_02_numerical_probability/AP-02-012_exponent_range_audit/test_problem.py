@@ -7,6 +7,7 @@ English: Read statement.tex before editing or interpreting this file.
 from __future__ import annotations
 
 import unittest
+import warnings
 
 import numpy as np
 
@@ -28,11 +29,19 @@ class ExponentRangeAuditTests(unittest.TestCase):
                     self.assertTrue(np.isfinite(np.exp(lower)))
                     self.assertFalse(np.isfinite(np.exp(upper)))
                 self.assertEqual(report["bracket_width"], float(upper - lower))
-                self.assertAlmostEqual(report["log_max"], float(np.log(np.array(np.finfo(dtype).max, dtype=dtype))), places=3)
+                # Real float64 estimate, not a dtype-rounded log. / 实数估计值，非 dtype 舍入。
+                self.assertAlmostEqual(report["log_max"], float(np.log(float(np.finfo(dtype).max))), places=3)
+
+    def test_probe_suppresses_the_overflow_warning(self) -> None:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", RuntimeWarning)
+            exp_range_audit(np.float32)
 
     def test_rejects_nonfloating_or_extended_type(self) -> None:
-        with self.assertRaises(ValueError):
-            exp_range_audit(np.int32)
+        for bad in (np.int32, np.complex128, np.dtype(object)):
+            with self.subTest(dtype=bad):
+                with self.assertRaises(ValueError):
+                    exp_range_audit(bad)
 
 
 if __name__ == "__main__":

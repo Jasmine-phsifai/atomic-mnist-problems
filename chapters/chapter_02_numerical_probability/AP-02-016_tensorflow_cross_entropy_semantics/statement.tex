@@ -16,7 +16,9 @@ unreduced fused operator consumes logits.
         \subsection{Code problem}
 
 
-Implement a CPU-compatible eager TensorFlow probe.  Convert logits to a watched
+Implement a CPU-compatible eager TensorFlow probe.  Require float64 logits and
+int64 labels, rejecting other input dtypes with \code{ValueError}.  Convert
+logits to a watched
 \code{tf.Variable} and labels to an int64 tensor.\newline
 Use TensorFlow's official sparse-softmax cross-entropy operator, reduce by mean
 inside \code{tf.GradientTape}, and return owned NumPy snapshots under the same three
@@ -43,7 +45,7 @@ keys as the PyTorch problem.
         \begin{itemize}
           \item Loss vector, mean, and gradient agree with the same stable SciPy/NumPy oracle used for PyTorch.
   \item The tape returns a non-null gradient with matching float64 shape.
-  \item The benchmark reports the finite probability-as-logits discrepancy and oracle error separately.
+  \item The benchmark reports the finite probability-as-logits discrepancy and oracle error separately. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 

@@ -49,7 +49,7 @@ trials.
         \begin{itemize}
           \item Shape, dtype, reproducibility, and empirical weight standard deviation are checked.
   \item For a deterministic large trial, Xavier-linear and He-ReLU energy ratios lie in the documented broad $[0.90,1.10]$ educational envelope.
-  \item The benchmark prints repeated-trial mean and spread, making sampling noise visible rather than hiding it behind one pass/fail number.
+  \item The benchmark prints repeated-trial mean and spread, making sampling noise visible rather than hiding it behind one pass/fail number. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -58,6 +58,7 @@ trials.
         \begin{itemize}
           \item Use \code{rng.normal}; do not use framework initializers.
   \item Do not seed inside the function or touch global RNG state.
+  \item Reject non-positive fan dimensions or an unknown scheme with \code{ValueError}.
   \item No C extension: matrix multiplication is already a library kernel and the atomic task is scale selection.
         \end{itemize}
 

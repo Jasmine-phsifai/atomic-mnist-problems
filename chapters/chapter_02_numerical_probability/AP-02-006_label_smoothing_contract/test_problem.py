@@ -17,22 +17,23 @@ class LabelSmoothingTests(unittest.TestCase):
     """Convention tests. / 约定一致性测试。"""
 
     def test_exact_all_class_convention(self) -> None:
-        labels = np.array([0, 2], dtype=np.int64)
+        labels = np.array([0, 2, 3], dtype=np.int64)  # includes top-boundary label K-1
         actual = smooth_targets(labels, num_classes=4, epsilon=0.2, dtype=np.float64)
-        expected = np.array([[0.85, 0.05, 0.05, 0.05], [0.05, 0.05, 0.85, 0.05]])
-        np.testing.assert_allclose(actual, expected, rtol=0.0, atol=2e-16)
-        np.testing.assert_allclose(actual.sum(axis=1), 1.0, rtol=0.0, atol=2e-16)
+        expected = np.array(
+            [[0.85, 0.05, 0.05, 0.05], [0.05, 0.05, 0.85, 0.05], [0.05, 0.05, 0.05, 0.85]]
+        )
+        self.assertEqual(actual.dtype, np.float64)
+        np.testing.assert_allclose(actual, expected, rtol=0.0, atol=1e-15)
+        np.testing.assert_allclose(actual.sum(axis=1), 1.0, rtol=0.0, atol=1e-15)
 
     def test_epsilon_endpoints(self) -> None:
         labels = np.array([1], dtype=np.int64)
-        np.testing.assert_array_equal(
-            smooth_targets(labels, num_classes=3, epsilon=0.0),
-            np.array([[0.0, 1.0, 0.0]], dtype=np.float32),
-        )
-        np.testing.assert_allclose(
-            smooth_targets(labels, num_classes=3, epsilon=1.0, dtype=np.float64),
-            np.full((1, 3), 1 / 3),
-        )
+        at_zero = smooth_targets(labels, num_classes=3, epsilon=0.0)
+        self.assertEqual(at_zero.dtype, np.float32)
+        np.testing.assert_array_equal(at_zero, np.array([[0.0, 1.0, 0.0]], dtype=np.float32))
+        at_one = smooth_targets(labels, num_classes=3, epsilon=1.0, dtype=np.float64)
+        self.assertEqual(at_one.dtype, np.float64)
+        np.testing.assert_allclose(at_one, np.full((1, 3), 1 / 3))
 
     def test_rejects_invalid_contract(self) -> None:
         cases = [

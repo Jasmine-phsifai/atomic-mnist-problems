@@ -24,8 +24,10 @@ s_{k+1}&=t_k.
 Implement Kahan summation for a nonempty one-dimensional finite float64 array,
 returning a Python float.  This explicit scalar loop is intentional: the problem
 studies accumulation state.  Compare against Python \code{sum}, NumPy
-\code{sum}, and \code{math.fsum}; do not claim Kahan is correctly rounded for
-every adversarial sequence.
+\code{sum}, and \code{math.fsum}; note that since Python 3.12 the built-in
+\code{sum} is itself Neumaier-compensated, so the naive baseline must be an
+explicit $s_{k+1}=\operatorname{fl}(s_k+x_k)$ loop.  Do not claim Kahan is
+correctly rounded for every adversarial sequence.
 
 
         \begin{contractbox}
@@ -48,7 +50,7 @@ every adversarial sequence.
         \begin{itemize}
           \item A small-increment fixture is closer to \code{math.fsum} than sequential Python accumulation.
   \item Simple exactly representable sums still match exactly.
-  \item The benchmark prints signed errors and order sensitivity for each reduction separately.
+  \item The benchmark prints signed errors and order sensitivity for each reduction separately. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -57,7 +59,7 @@ every adversarial sequence.
         \begin{itemize}
           \item Use the stated Kahan recurrence; do not call \code{math.fsum} or \code{np.sum} inside the learner function.
   \item The scalar loop is pedagogically justified and needs no C extension at this scale.
-  \item Reject empty, non-vector, non-float64, or nonfinite input.
+  \item Reject empty, non-vector, non-float64, or nonfinite input with \code{ValueError}.
         \end{itemize}
 
         \begin{sourcebox}

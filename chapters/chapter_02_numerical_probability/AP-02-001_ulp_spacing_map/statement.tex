@@ -18,9 +18,10 @@ subnormal number.
 
 
 Implement \code{local\_spacing} for finite nonnegative values and one requested
-NumPy floating dtype.  Cast the values first, then compute the forward neighbor
+NumPy floating dtype, given as a \code{type} or an \code{np.dtype} instance.
+Cast the values first, then compute the forward neighbor
 in the same dtype.  Return spacings in that dtype and reject integer dtypes,
-negative values, NaN, and infinity.
+negative values, NaN, and infinity with \code{ValueError}.
 
 
         \begin{contractbox}
@@ -43,7 +44,7 @@ negative values, NaN, and infinity.
         \begin{itemize}
           \item Every result equals an independently computed same-dtype \code{nextafter} difference.
   \item Spacing is positive, zero uses the smallest subnormal, and powers of two expose jumps.
-  \item The benchmark draws three dtype curves and prints spacing ratios; interpretation replaces a fabricated pass threshold.
+  \item The benchmark draws three dtype curves and prints spacing ratios; interpretation replaces a fabricated pass threshold. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 

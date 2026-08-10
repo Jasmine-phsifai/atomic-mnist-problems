@@ -20,9 +20,12 @@ Use the measure-theoretic boundary conventions
 
 
 Implement entropy and KL along a selected axis.  Validate finite nonnegative
-entries and unit sums to a dtype-aware tolerance.  Use SciPy's \code{xlogy} or
+entries and unit sums to a dtype-aware tolerance, rejecting violations with
+\code{ValueError}.  Use SciPy's \code{xlogy} or
 \code{xlog1py} primitives to encode zero conventions; do not patch NaNs after a
-naive division.  Preserve all non-reduced axes.
+naive division.  Preserve all non-reduced axes.  Results are compared to
+oracles within an absolute tolerance of \(10^{-15}\), a few float64 ulps at
+unit scale.
 
 
         \begin{contractbox}
@@ -46,7 +49,7 @@ def kl_divergence(p: np.ndarray, q: np.ndarray, *, axis: int = -1) -> np.ndarray
         \begin{evidencebox}
         \begin{itemize}
           \item Point mass, uniform distribution, matching-zero support, and support-mismatch cases have exact expected behavior.
-  \item Random-simplex diagnostics report minimum KL and count of materially negative values.
+  \item Random-simplex diagnostics report minimum KL and count of materially negative values. (The reporting itself is trust-based: the test suite checks the nonnegativity property but not benchmark output.)
   \item Shape and axis preservation are tested separately from scalar examples.
         \end{itemize}
         \end{evidencebox}

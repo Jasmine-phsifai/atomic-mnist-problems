@@ -19,7 +19,8 @@ operation designed for small increments.
 
 
 Implement the stable identity elementwise for float32 and float64 arrays.  Keep
-shape and dtype and reject non-floating or non-finite input.\newline
+shape and dtype and reject non-floating or non-finite input with
+\code{ValueError}.\newline
 Do not call \code{np.logaddexp} in the learner implementation; it is reserved as
 the oracle.
 
@@ -44,7 +45,7 @@ the oracle.
         \begin{itemize}
           \item Results are finite and agree with \code{np.logaddexp(0,x)} for extreme and near-zero values.
   \item Monotonicity and nonnegativity are checked independently of oracle agreement.
-  \item The benchmark prints finite-count and maximum-error diagnostics and plots stable versus naive behavior.
+  \item The benchmark prints finite-count and maximum-error diagnostics and plots stable versus naive behavior. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 

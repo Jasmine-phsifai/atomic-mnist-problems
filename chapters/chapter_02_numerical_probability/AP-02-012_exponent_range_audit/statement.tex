@@ -21,7 +21,8 @@ x^+_\tau-x^-_\tau=\operatorname{ulp}^+_\tau(x^-_\tau).
 
 Starting from \code{log(finfo.max)}, walk with \code{nextafter} until you locate
 the adjacent finite/overflowing inputs for float16, float32, or float64.  Return
-\code{log\_max}, \code{last\_finite}, \code{first\_overflow}, and
+\code{log\_max} (the real estimate, evaluated as a Python float64 logarithm,
+not rounded to the probed dtype), \code{last\_finite}, \code{first\_overflow}, and
 \code{bracket\_width} as Python floats.  Suppress only the expected overflow
 warning during the probe.
 
@@ -46,7 +47,7 @@ warning during the probe.
         \begin{itemize}
           \item The returned inputs are adjacent in the requested dtype.
   \item Exponentiation is finite at the lower input and non-finite at the upper input.
-  \item The benchmark prints a dtype table; there is no single cross-dtype threshold.
+  \item The benchmark prints a dtype table; there is no single cross-dtype threshold. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -55,7 +56,7 @@ warning during the probe.
         \begin{itemize}
           \item Use \code{np.finfo}, \code{np.log}, \code{np.exp}, and \code{np.nextafter}; do not inspect bit patterns.
   \item Bound the adjustment loop and fail if adjacency cannot be established.
-  \item Support exactly float16, float32, and float64.
+  \item Support exactly float16, float32, and float64; reject any other dtype with \code{ValueError}.
         \end{itemize}
 
         \begin{sourcebox}

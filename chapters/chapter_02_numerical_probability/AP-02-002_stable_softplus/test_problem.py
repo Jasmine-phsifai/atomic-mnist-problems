@@ -28,10 +28,16 @@ class SoftplusTests(unittest.TestCase):
             np.testing.assert_allclose(actual, expected, rtol=0.0, atol=atol)
 
     def test_rejects_bad_domain(self) -> None:
-        with self.assertRaises(ValueError):
-            stable_softplus(np.array([1, 2], dtype=np.int64))
-        with self.assertRaises(ValueError):
-            stable_softplus(np.array([np.inf], dtype=np.float64))
+        for bad in [
+            np.array([1, 2], dtype=np.int64),
+            np.array([1.0 + 0.0j], dtype=np.complex128),
+            np.array([np.inf], dtype=np.float64),
+            np.array([-np.inf], dtype=np.float64),
+            np.array([np.nan], dtype=np.float32),
+        ]:
+            with self.subTest(dtype=bad.dtype, values=bad):
+                with self.assertRaises(ValueError):
+                    stable_softplus(bad)
 
 
 if __name__ == "__main__":

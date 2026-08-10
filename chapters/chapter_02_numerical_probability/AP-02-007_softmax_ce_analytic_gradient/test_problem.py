@@ -39,11 +39,34 @@ class AnalyticGradientTests(unittest.TestCase):
         np.testing.assert_allclose(analytic, numeric, rtol=2e-7, atol=2e-9)
         np.testing.assert_allclose(analytic.sum(axis=1), 0.0, rtol=0.0, atol=2e-16)
 
+    def test_extreme_logits_stay_finite(self) -> None:
+        logits = np.array([[700.0, 0.0, -700.0], [-700.0, 0.0, 700.0]], dtype=np.float64)
+        labels = np.array([0, 2], dtype=np.int64)
+        analytic = softmax_cross_entropy_gradient(logits, labels)
+        self.assertTrue(np.all(np.isfinite(analytic)))
+        stable = np.exp(logits - logsumexp(logits, axis=1, keepdims=True))
+        expected = (stable - np.eye(3)[labels]) / 2.0
+        np.testing.assert_allclose(analytic, expected, rtol=1e-12, atol=0.0)
+
     def test_rejects_invalid_labels(self) -> None:
         with self.assertRaises(ValueError):
             softmax_cross_entropy_gradient(np.ones((2, 3)), np.array([0.0, 1.0]))
         with self.assertRaises(ValueError):
             softmax_cross_entropy_gradient(np.ones((2, 3)), np.array([0, 3]))
+        with self.assertRaises(ValueError):
+            softmax_cross_entropy_gradient(np.ones((2, 3)), np.array([-1, 0]))
+
+    def test_rejects_out_of_domain_inputs(self) -> None:
+        with self.assertRaises(ValueError):
+            softmax_cross_entropy_gradient(np.array([[np.nan, 0.0], [0.0, 1.0]]), np.array([0, 1]))
+        with self.assertRaises(ValueError):
+            softmax_cross_entropy_gradient(np.array([[np.inf, 0.0], [0.0, 1.0]]), np.array([0, 1]))
+        with self.assertRaises(ValueError):
+            softmax_cross_entropy_gradient(np.ones(3), np.array([0]))
+        with self.assertRaises(ValueError):
+            softmax_cross_entropy_gradient(np.ones((2, 3)), np.array([[0, 1]]))
+        with self.assertRaises(ValueError):
+            softmax_cross_entropy_gradient(np.ones((2, 3)), np.array([0, 1, 2]))
 
 
 if __name__ == "__main__":

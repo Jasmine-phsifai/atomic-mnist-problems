@@ -20,7 +20,11 @@ class CompensatedSummationTests(unittest.TestCase):
     def test_recovers_many_small_increments(self) -> None:
         values = np.concatenate([np.array([1.0]), np.full(20_000, 1e-16)])
         oracle = math.fsum(values.tolist())
-        naive = sum(values.tolist())
+        # Explicit fl(s + x) loop: builtin sum() is Neumaier-compensated since
+        # Python 3.12 and would be as accurate as Kahan here. / 显式顺序累加循环。
+        naive = 0.0
+        for value in values.tolist():
+            naive += value
         actual = kahan_sum(values)
         self.assertLessEqual(abs(actual - oracle), np.finfo(np.float64).eps)
         self.assertLess(abs(actual - oracle), abs(naive - oracle))
@@ -34,6 +38,7 @@ class CompensatedSummationTests(unittest.TestCase):
             np.ones((2, 2), dtype=np.float64),
             np.ones(2, dtype=np.float32),
             np.array([1.0, np.inf]),
+            np.array([1.0, np.nan]),
         ]:
             with self.assertRaises(ValueError):
                 kahan_sum(values)

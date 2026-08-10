@@ -20,7 +20,8 @@ so ``smaller $h$'' is not monotone improvement.
 
 Implement a side-effect-safe central difference for a NumPy vector and scalar
 callable.  Copy the input for both evaluations, validate the coordinate and
-finite positive step, and return a Python float.  The benchmark sweeps logarithmic
+finite positive step, rejecting violations with \code{ValueError}, and return a
+Python float.  The benchmark sweeps logarithmic
 steps on a stable classification loss and locates the empirical minimum.
 
 
@@ -43,8 +44,8 @@ steps on a stable classification loss and locates the empirical minimum.
         \begin{evidencebox}
         \begin{itemize}
           \item A quadratic fixture agrees with its analytic derivative and the input remains unchanged.
-  \item Invalid coordinate, nonpositive/nonfinite step, or non-scalar function result fails.
-  \item The benchmark saves a log--log U-curve and prints the best step/error for this function and dtype.
+  \item Invalid coordinate, nonpositive/nonfinite step, or non-scalar function result fails with \code{ValueError}.
+  \item The benchmark saves a log--log U-curve and prints the best step/error for this function and dtype. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 

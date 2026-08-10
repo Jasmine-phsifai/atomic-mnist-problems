@@ -47,6 +47,12 @@ class MinibatchEstimatorTests(unittest.TestCase):
             sample_batch_means(np.ones((5, 2)), batch_size=6, repeats=3, seed=0)
         with self.assertRaises(ValueError):
             sample_batch_means(np.ones((5, 2)), batch_size=2, repeats=0, seed=0)
+        with self.assertRaises(ValueError):
+            sample_batch_means(np.ones((5, 2)), batch_size=2, repeats=-1, seed=0)
+        with self.assertRaises(ValueError):
+            sample_batch_means(np.array([[1.0, np.nan], [0.0, 1.0]]), batch_size=1, repeats=3, seed=0)
+        with self.assertRaises(ValueError):
+            sample_batch_means(np.array([[1.0, np.inf], [0.0, 1.0]]), batch_size=1, repeats=3, seed=0)
 
 
 if __name__ == "__main__":

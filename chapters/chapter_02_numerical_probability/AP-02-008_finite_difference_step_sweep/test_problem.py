@@ -26,12 +26,24 @@ class CentralDifferenceTests(unittest.TestCase):
 
         actual = central_difference(f, x, index=1, h=1e-5)
         expected = 2 * weights[1] * x[1]
+        self.assertEqual(type(actual), float)
         self.assertAlmostEqual(actual, expected, places=9)
         np.testing.assert_array_equal(x, snapshot)
 
+    def test_step_argument_changes_the_result(self) -> None:
+        # A quadratic is blind to h; exp is not. / 二次函数对 h 不敏感，指数函数则不然。
+        def f(v: np.ndarray) -> float:
+            return float(np.exp(v[0]))
+
+        x = np.array([1.5])
+        small = central_difference(f, x, index=0, h=1e-5)
+        large = central_difference(f, x, index=0, h=0.5)
+        self.assertAlmostEqual(small, float(np.exp(1.5)), places=5)
+        self.assertNotAlmostEqual(small, large, places=3)
+
     def test_rejects_invalid_contract(self) -> None:
         x = np.ones(3)
-        for index, h in ((-1, 1e-5), (3, 1e-5), (0, 0.0), (0, np.inf)):
+        for index, h in ((-1, 1e-5), (3, 1e-5), (0, 0.0), (0, -1e-5), (0, np.inf), (0, np.nan)):
             with self.assertRaises(ValueError):
                 central_difference(lambda v: float(v.sum()), x, index=index, h=h)
         with self.assertRaises(ValueError):

@@ -26,8 +26,14 @@ class PyTorchCrossEntropyTests(unittest.TestCase):
         logits = np.array([[1000.0, 0.0, -1000.0], [1.0, 2.0, 3.0], [-4.0, -4.0, -4.0]])
         labels = np.array([0, 1, 2], dtype=np.int64)
         report = pytorch_cross_entropy_probe(logits, labels)
-        losses = np.asarray(report["losses"])
-        gradient = np.asarray(report["gradient"])
+        self.assertIsInstance(report["losses"], np.ndarray)
+        self.assertIsInstance(report["gradient"], np.ndarray)
+        losses = report["losses"]
+        gradient = report["gradient"]
+        self.assertEqual(losses.dtype, np.float64)
+        self.assertEqual(gradient.dtype, np.float64)
+        self.assertEqual(losses.shape, (3,))
+        self.assertEqual(gradient.shape, (3, 3))
         expected_losses = logsumexp(logits, axis=1) - logits[np.arange(3), labels]
         expected_gradient = softmax(logits, axis=1)
         expected_gradient[np.arange(3), labels] -= 1.0
@@ -43,6 +49,8 @@ class PyTorchCrossEntropyTests(unittest.TestCase):
             pytorch_cross_entropy_probe(np.ones((2, 3), dtype=np.float32), np.array([0, 1]))
         with self.assertRaises(ValueError):
             pytorch_cross_entropy_probe(np.ones((2, 3)), np.array([0.0, 1.0]))
+        with self.assertRaises(ValueError):
+            pytorch_cross_entropy_probe(np.ones((2, 3)), np.array([0, 1], dtype=np.int32))
 
 
 if __name__ == "__main__":

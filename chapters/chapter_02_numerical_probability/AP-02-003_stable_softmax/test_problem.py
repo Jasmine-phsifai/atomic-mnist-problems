@@ -27,6 +27,13 @@ class StableSoftmaxTests(unittest.TestCase):
         np.testing.assert_allclose(actual, shifted, rtol=0.0, atol=2e-13)
         np.testing.assert_allclose(actual, scipy_softmax(logits, axis=1), rtol=2e-15, atol=0.0)
 
+    def test_default_axis_and_keyword_only(self) -> None:
+        logits = np.array([[1.0, 2.0, 3.0], [3.0, 2.0, 1.0]])
+        defaulted = stable_softmax(logits)
+        np.testing.assert_array_equal(defaulted, stable_softmax(logits, axis=-1))
+        with self.assertRaises(TypeError):
+            stable_softmax(logits, 1)  # axis is keyword-only. / axis 仅接受关键字传参。
+
     def test_nonlast_axis_and_dtype(self) -> None:
         logits = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
         actual = stable_softmax(logits, axis=1)

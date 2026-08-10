@@ -21,8 +21,13 @@ class WelfordTests(unittest.TestCase):
         values = 1e12 + residual
         for ddof in (0, 1):
             mean, variance = online_mean_variance(values, ddof=ddof)
-            self.assertAlmostEqual(mean, float(np.mean(values)), places=3)
-            self.assertAlmostEqual(variance, float(np.var(values, ddof=ddof)), places=10)
+            self.assertEqual(type(mean), float)
+            self.assertEqual(type(variance), float)
+            # One-pass float64 Welford drifts ~2e-2 (mean) and ~1.2e-4 (variance)
+            # from the two-pass oracle at this offset; the naive E[X^2]-E[X]^2
+            # formula errs by ~1e11. / 容差按一遍 Welford 可达精度设定。
+            self.assertAlmostEqual(mean, float(np.mean(values)), delta=0.05)
+            self.assertAlmostEqual(variance, float(np.var(values, ddof=ddof)), delta=1e-3)
 
     def test_constant_variance_is_exact_zero(self) -> None:
         mean, variance = online_mean_variance(np.full(17, 3.5), ddof=1)
@@ -35,6 +40,7 @@ class WelfordTests(unittest.TestCase):
             (np.ones((2, 2), dtype=np.float64), 0),
             (np.ones(2, dtype=np.float32), 0),
             (np.array([1.0, np.nan]), 0),
+            (np.array([1.0, np.inf]), 0),
             (np.ones(1), 1),
             (np.ones(2), 2),
         ]:

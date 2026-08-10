@@ -21,7 +21,9 @@ For any row-wise shift $a_i$,
 
 Implement stable softmax along a caller-selected axis for finite float32/float64
 arrays.  Normalize with the maximum retained via \code{keepdims=True}; preserve
-shape and dtype.  Reject scalar input and an invalid axis.  SciPy is an oracle,
+shape and dtype.  Reject scalar input and non-floating dtypes with
+\code{ValueError}, and an invalid axis with \code{ValueError} or NumPy's own
+\code{AxisError}.  SciPy is an oracle,
 not the learner implementation.
 
 

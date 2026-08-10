@@ -44,7 +44,7 @@ agreement from random samples.
         \begin{itemize}
           \item Same-seed samples are identical; a different seed changes them.
   \item Coordinate mean errors are reported in standard-error units and remain within the stated five-sigma test envelope for a fixed deterministic experiment.
-  \item The benchmark plots empirical/theoretical trace variance over batch size and prints their ratios.
+  \item The benchmark plots empirical/theoretical trace variance over batch size and prints their ratios. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -53,7 +53,7 @@ agreement from random samples.
         \begin{itemize}
           \item Sample each repeat without replacement via a local \code{Generator}.
   \item Do not enumerate all subsets and do not use a framework data loader.
-  \item Reject $b>N$, nonpositive repeats, nonfinite values, or non-matrix input.
+  \item Reject $b>N$, nonpositive repeats, nonfinite values, or non-matrix input with \code{ValueError}.
         \end{itemize}
 
         \begin{sourcebox}

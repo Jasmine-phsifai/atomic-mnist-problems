@@ -22,7 +22,9 @@ directions provide a distribution of evidence.
 Implement a checker that calls a supplied analytic-gradient function once,
 normalizes the direction, evaluates two copied points, and returns a dictionary
 with \code{analytic}, \code{numeric}, and \code{relative\_error}.  Validate all
-shapes and finite scalar/vector results.
+shapes and finite scalar/vector results, rejecting zero directions, shape
+mismatches, nonfinite values or results, and nonpositive or nonfinite steps
+with \code{ValueError}.
 
 
         \begin{contractbox}
@@ -44,8 +46,8 @@ shapes and finite scalar/vector results.
         \begin{evidencebox}
         \begin{itemize}
           \item A quadratic function produces a small scale-aware error and leaves all inputs unchanged.
-  \item Zero direction, shape mismatch, nonfinite values, and invalid step fail.
-  \item The benchmark reports median/max errors for correct and corrupted gradients over the same seeded directions.
+  \item Zero direction, shape mismatch, nonfinite values, and invalid step fail with \code{ValueError}.
+  \item The benchmark reports median/max errors for correct and corrupted gradients over the same seeded directions. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 

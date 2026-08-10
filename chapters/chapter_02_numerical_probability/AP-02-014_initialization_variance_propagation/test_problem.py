@@ -28,6 +28,14 @@ class InitializationTests(unittest.TestCase):
             np.testing.assert_array_equal(a, b)
             self.assertLess(abs(float(a.std()) / expected_std - 1.0), 0.02)
 
+    def test_consumes_the_caller_generator(self) -> None:
+        rng = np.random.default_rng(7)
+        witness = np.random.default_rng(7)
+        initialize_weights(8, 4, scheme="he_normal", rng=rng)
+        # An ignored caller generator stays fresh and matches the witness. /
+        # 若未消费调用方的生成器，其状态将与见证生成器一致。
+        self.assertFalse(np.array_equal(rng.normal(size=4), witness.normal(size=4)))
+
     def test_propagated_energy_envelope(self) -> None:
         rng_x = np.random.default_rng(140)
         rng_h = np.random.default_rng(141)

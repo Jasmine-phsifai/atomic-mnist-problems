@@ -47,7 +47,7 @@ reference gradient function.
         \begin{itemize}
           \item All row sums are near zero and the output shape/dtype match the logits.
   \item Every coordinate of a small fixture agrees with a central-difference derivative of the stable scalar loss.
-  \item The benchmark prints maximum absolute error, maximum relative error, and shift-null residual separately.
+  \item The benchmark prints maximum absolute error, maximum relative error, and shift-null residual separately. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -55,7 +55,7 @@ reference gradient function.
 
         \begin{itemize}
           \item No PyTorch, TensorFlow, JAX, autograd, or finite differences inside the learner function.
-  \item Support finite rank-two float64 logits and one-dimensional integer labels.
+  \item Support finite rank-two float64 logits and one-dimensional integer labels in $[0,K)$ paired with the batch; reject out-of-domain inputs with \code{ValueError}.
   \item Use the mean reduction exactly as stated.
         \end{itemize}
 

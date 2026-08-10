@@ -45,14 +45,14 @@ Take its mean, backpropagate once, then return owned NumPy snapshots under keys 
         \begin{itemize}
           \item Unreduced losses, mean, and gradient agree with a stable SciPy/NumPy oracle on extreme logits.
   \item Returned arrays own their memory and have the requested shape/dtype.
-  \item The benchmark prints the double-softmax misuse discrepancy separately from oracle error.
+  \item The benchmark prints the double-softmax misuse discrepancy separately from oracle error. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
         \subsection{Constraints}
 
         \begin{itemize}
-          \item Use CPU float64 and sparse int64 labels; no model, optimizer, DataLoader, or GPU.
+          \item Use CPU float64 and sparse int64 labels, rejecting other input dtypes with \code{ValueError}; no model, optimizer, DataLoader, or GPU.
   \item Use the official fused PyTorch loss rather than rebuilding it.
   \item Detach and copy before returning NumPy evidence.
         \end{itemize}

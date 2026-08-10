@@ -22,7 +22,8 @@ Thus
 
 Implement target construction for integer labels, positive class count, and
 float32/float64 output.\newline
-Validate epsilon and the label domain.  The benchmark
+Validate epsilon and the label domain, rejecting invalid labels, dtype, class
+count, or epsilon with \code{ValueError}.  The benchmark
 must compare target entropy and the norm of $\bm p-\tilde{\bm y}$ for several
 epsilon values at fixed overconfident logits.
 
@@ -45,9 +46,9 @@ epsilon values at fixed overconfident logits.
 
         \begin{evidencebox}
         \begin{itemize}
-          \item Entries and row sums match the stated all-class convention exactly for epsilon $0$, an interior value, and $1$.
-  \item Invalid labels, dtype, class count, or epsilon fail.
-  \item The benchmark prints target entropy and gradient norm as separate response curves.
+          \item Entries and row sums match the stated all-class convention to within \(10^{-15}\) (a few float64 ulps at unit scale) for epsilon $0$, an interior value, and $1$.
+  \item Invalid labels, dtype, class count, or epsilon fail with \code{ValueError}.
+  \item The benchmark prints target entropy and gradient norm as separate response curves. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 

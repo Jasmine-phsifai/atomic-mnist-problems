@@ -27,6 +27,8 @@ class SpacingContractTests(unittest.TestCase):
                 self.assertEqual(actual.dtype, np.dtype(dtype))
                 np.testing.assert_array_equal(actual, expected)
                 self.assertTrue(np.all(actual > 0))
+        via_instance = local_spacing(values, dtype=np.dtype(np.float32))
+        self.assertEqual(via_instance.dtype, np.dtype(np.float32))
 
     def test_rejects_invalid_domain_and_dtype(self) -> None:
         for values, dtype in [
