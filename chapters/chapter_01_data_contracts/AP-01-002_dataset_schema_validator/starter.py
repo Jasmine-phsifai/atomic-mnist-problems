@@ -28,4 +28,36 @@ def validate_split(
     - 只有先校验标签范围，才能安全使用 ``np.bincount``。
     """
     # TODO: reject instead of silently reshaping or casting. / 应拒绝错误输入，而非静默整形或转换。
+    imgshape=images.shape
+    lblshape=labels.shape
+    if expected_size is not None and (expected_size <= 0 or expected_size.is_integer() == False):
+        raise ValueError(f"expected_size must be a positive integer, got {expected_size}")
+    if len(imgshape)!=images.ndim or len(lblshape)!=labels.ndim:
+        raise ValueError(f"expected images.ndim={len(imgshape)} and labels.ndim={len(lblshape)}, got {images.ndim} and {labels.ndim}")
+    if len(imgshape)!=3 or imgshape[1:]!=(28,28):
+        raise ValueError(f"expected images of shape (N,28,28), got {imgshape}[:4]")
+    if len(lblshape)!=1:
+        raise ValueError(f"expected labels of shape (N,), got {lblshape}[:2]")
+    if imgshape[0] != lblshape[0] or (expected_size is not None and (imgshape[0]!= expected_size or lblshape[0]!= expected_size)):
+        raise ValueError(f"expected images, labels, and expected_size to have the same length/patchsize or expected_size to be None, got {imgshape[0]} vs {lblshape[0]} vs {expected_size}")
+    if images.dtype!=np.uint8:
+        raise ValueError(f"expected images of dtype uint8, got {images.dtype}")
+    if not np.issubdtype(labels.dtype, np.integer):
+        raise ValueError(f"expected labels of integer dtype, got {labels.dtype}")
+    print("initial validation passed")
+    projection= {k: np.eye(10)[k] for k in range(10)}
+    try:
+        records = sum((projection[i] for i in labels))
+    except KeyError as e:
+        raise ValueError(f"unexpected label value outside 0~9, got {e}") # How can I catch the keyerror and get the triggering unexpected value?
+    ResultDict={
+        "n": expected_size,
+        "image_shape": imgshape,
+        "image_dtype": images.dtype,
+        "label_dtype": labels.dtype,
+        "pixel_min": images.min(),
+        "pixel_max": images.max(),
+        "class_counts": records
+    }
+    return ResultDict
     raise NotImplementedError("AP-01-002")

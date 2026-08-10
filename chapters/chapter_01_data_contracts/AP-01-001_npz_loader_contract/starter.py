@@ -26,10 +26,51 @@ def load_npz_array(path: Path, *, expected_key: str) -> np.ndarray:
     """
     # TODO: validate suffix, exact key set, and non-object dtype. / 校验后缀、唯一键和非对象类型。
     suff = path.suffixes
-    if len(suff)==1 and suff[0]=='.npz':
+    if len(suff)!=1 or suff[0]!='.npz':
+        raise ValueError(f"expected a single .npz artifact, got {suff}[:3]")
         with np.load(path,allow_pickle=False) as TempNPZ:
-            if set(TempNPZ.files) == {expected_key}:
+            if set(TempNPZ.files) != {expected_key}:
+                raise ValueError(f"expected a single key {expected_key}, got {TempNPZ.files}[:3]")
                 array = TempNPZ[expected_key]
-                if array.dtype != object :
+                if not array.dtype.hasobject:
                     return array.copy()
+                else:
+                    raise ValueError(f"expected a non-object array, got {array.dtype}")
     raise NotImplementedError("AP-01-001")
+
+# ---------------------------------------------------------------------------
+# Reference design (advanced): judge the header before touching any payload.
+# 参考设计（进阶）：在触碰 payload 之前先判头部。
+#
+# Why the in-body dtype check above can never fire: ``archive[key]`` runs
+# ``np.lib.format.read_array``, which itself refuses object dtypes when
+# ``allow_pickle=False``. Only arrays that already passed NumPy's gate ever
+# reach the body, so the body check is defense in depth, not the real gate.
+# 为什么函数体内的 dtype 检查永远不会触发：``archive[key]`` 内部已拒绝
+# object dtype，能回到函数体的数组必然已通过 NumPy 的检查。
+#
+# np.load on .npz is lazy: it reads only the ZIP name table; a member is
+# parsed only at ``archive[key]``. A member is raw NPY bytes laid out as
+# ``magic | version | header | payload``, and the dtype string lives in the
+# header, so it can be judged without reading any data.
+# np.load 对 .npz 是惰性的：只读 ZIP 名字表，成员在 ``archive[key]`` 时才
+# 解析。成员字节布局为 magic | 版本 | 头部 | 数据，dtype 写在头部里。
+#
+#     with archive.zip.open(expected_key + ".npy") as member:
+#         version = np.lib.format.read_magic(member)
+#         if version == (1, 0):
+#             _shape, _fortran, dtype = np.lib.format.read_array_header_1_0(member)
+#         elif version == (2, 0):
+#             _shape, _fortran, dtype = np.lib.format.read_array_header_2_0(member)
+#         else:
+#             raise ValueError(f"unsupported npy format version {version}")
+#     if dtype.hasobject:
+#         raise ValueError(f"untrusted object dtype: {dtype!r}")
+#
+# ``archive.zip`` is a stdlib ``ZipFile``; ``.open(name)`` streams one
+# member's decompressed bytes. Use ``dtype.hasobject`` rather than
+# ``dtype != object``: a structured dtype like ``[('meta', 'O'),
+# ('x', '<f4')]`` hides an object field that ``!=`` would wave through.
+# ``archive.zip`` 是标准库 ``ZipFile``；用 ``hasobject`` 而非 ``!= object``，
+# 因为结构化 dtype 可以把 object 字段藏起来。
+# ---------------------------------------------------------------------------
