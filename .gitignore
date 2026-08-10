@@ -33,6 +33,5 @@ chapters/**/diagnostic_*.png
 # Machine-specific editor settings.
 .vscode/
 
-# Local agent and workflow notes, not part of the public curriculum.
-CLAUDE.md
+# Superseded personal notes; CLAUDE.md is the tracked repo guide.
 .agent.md
