@@ -32,13 +32,30 @@ class OneHotContractTests(unittest.TestCase):
         encoded = one_hot(labels, num_classes=3, dtype=np.float64)
         np.testing.assert_array_equal(encoded, np.array([[0, 1, 0]] * 3, dtype=np.float64))
 
+    def test_rectangular_output_when_n_differs_from_k(self) -> None:
+        labels = np.array([0, 2], dtype=np.int64)
+        encoded = one_hot(labels, num_classes=4)
+        self.assertEqual(encoded.shape, (2, 4))
+        np.testing.assert_array_equal(
+            encoded, np.array([[1, 0, 0, 0], [0, 0, 1, 0]], dtype=np.float32)
+        )
+
+    def test_signature_default_and_keyword_only(self) -> None:
+        labels = np.array([0, 1], dtype=np.int64)
+        self.assertEqual(one_hot(labels, num_classes=2).dtype, np.float32)
+        with self.assertRaises(TypeError):
+            one_hot(labels, 2, np.float64)  # keyword-only per contract. / 按契约仅接受关键字传参。
+
     def test_rejects_invalid_domain(self) -> None:
         cases = [
             (np.array([[0, 1]]), 2, np.float32),
             (np.array([0.0, 1.0]), 2, np.float32),
+            (np.array([True, False]), 2, np.float32),
             (np.array([-1, 0]), 2, np.float32),
             (np.array([0, 2]), 2, np.float32),
             (np.array([0, 1]), 0, np.float32),
+            (np.array([0, 1]), -1, np.float32),
+            (np.array([0, 1]), 2.5, np.float32),
             (np.array([0, 1]), 2, np.int32),
         ]
         for labels, classes, dtype in cases:

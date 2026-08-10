@@ -27,4 +27,11 @@ def normalize_uint8(
     - ``np.shares_memory`` 用于测试存储关系，不是实现逻辑本身。
     """
     # TODO: validate, cast before division, and preserve ownership. / 校验后先转换类型，再做除法并保持独立存储。
-    raise NotImplementedError("AP-01-003")
+    if images.dtype!=np.uint8:
+        raise ValueError(f"expected images of dtype uint8, got {images.dtype}")
+    if images.ndim not in (2,3):
+        raise ValueError(f"expected images of shape (batchsize,length,width) or (length,width), got {images.shape[-3:]}")
+    if dtype not in (np.float64, np.float32):
+        raise ValueError(f"expected dtype to be float32 or float64, got {dtype}")
+    result= (images/255).astype(dtype,copy=True)
+    return result

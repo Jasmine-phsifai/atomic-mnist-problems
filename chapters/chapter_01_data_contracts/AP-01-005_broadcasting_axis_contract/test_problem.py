@@ -33,8 +33,12 @@ class BroadcastingContractTests(unittest.TestCase):
         for mean, scale in [
             (np.zeros((3, 1)), np.ones(4)),
             (np.zeros(4), np.ones((1, 4))),
+            (np.array([0.0, np.nan, 0.0, 0.0]), np.ones(4)),
+            (np.array([0.0, np.inf, 0.0, 0.0]), np.ones(4)),
             (np.zeros(4), np.array([1.0, 0.0, 1.0, 1.0])),
+            (np.zeros(4), np.array([1.0, -1.0, 1.0, 1.0])),
             (np.zeros(4), np.array([1.0, np.inf, 1.0, 1.0])),
+            (np.zeros(4), np.array([1.0, np.nan, 1.0, 1.0])),
         ]:
             with self.subTest(mean_shape=np.shape(mean), scale_shape=np.shape(scale)):
                 with self.assertRaises(ValueError):

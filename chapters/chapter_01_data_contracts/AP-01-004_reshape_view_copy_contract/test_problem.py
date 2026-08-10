@@ -35,8 +35,14 @@ class FlattenContractTests(unittest.TestCase):
         self.assertEqual(actual.shape, (3, 784))
 
     def test_rejects_wrong_image_extent(self) -> None:
-        with self.assertRaises(ValueError):
-            flatten_images(np.zeros((2, 14, 56)), require_independent=False)
+        for bad in [
+            np.zeros((2, 14, 56)),      # wrong trailing extents
+            np.zeros((2, 3, 28, 28)),   # rank 4 with (28, 28) trailing dims
+            np.zeros((28, 28)),         # rank 2
+        ]:
+            with self.subTest(shape=bad.shape):
+                with self.assertRaises(ValueError):
+                    flatten_images(bad, require_independent=False)
 
 
 if __name__ == "__main__":

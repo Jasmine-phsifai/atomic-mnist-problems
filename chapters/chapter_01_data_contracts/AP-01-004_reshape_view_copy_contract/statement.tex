@@ -47,7 +47,7 @@ memory.  A non-contiguous input must still produce correct row-major values;
         \begin{itemize}
           \item Output values match the row-major index equation for contiguous and reversed-stride inputs.
   \item The alias matrix is exactly: contiguous/shared $\mapsto$ true; contiguous/independent $\mapsto$ false.
-  \item The benchmark prints storage bytes and mutation propagation rather than assuming \code{reshape} always returns a view.
+  \item The benchmark prints storage bytes and mutation propagation rather than assuming \code{reshape} always returns a view. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -56,7 +56,7 @@ memory.  A non-contiguous input must still produce correct row-major values;
         \begin{itemize}
           \item Use NumPy reshape/copy facilities; do not write index loops.
   \item Do not call \code{flatten()}, which always copies and erases the policy distinction.
-  \item Reject a batch whose trailing dimensions are not $(28,28)$.
+  \item Reject with \code{ValueError} a batch that is not three-dimensional or whose trailing dimensions are not $(28,28)$.
         \end{itemize}
 
         \begin{sourcebox}

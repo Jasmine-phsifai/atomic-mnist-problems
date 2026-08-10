@@ -6,6 +6,7 @@ English: Read statement.tex before editing or interpreting this file.
 
 from __future__ import annotations
 
+import types
 import unittest
 
 import numpy as np
@@ -25,6 +26,11 @@ class BatchIteratorTests(unittest.TestCase):
         np.testing.assert_array_equal(joined, source)
         self.assertEqual(np.unique(joined).size, 23)
         np.testing.assert_array_equal(source, snapshot)
+
+    def test_yields_a_generator(self) -> None:
+        epoch = iter_minibatches(np.arange(4), batch_size=2, shuffle=False, seed=0, drop_last=False)
+        self.assertIsInstance(epoch, types.GeneratorType)
+        self.assertEqual([b.size for b in epoch], [2, 2])
 
     def test_drop_last_and_seed_behavior(self) -> None:
         source = np.arange(23, dtype=np.int64)

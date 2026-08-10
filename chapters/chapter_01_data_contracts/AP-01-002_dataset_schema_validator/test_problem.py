@@ -24,13 +24,23 @@ class SchemaContractTests(unittest.TestCase):
         report = validate_split(self.images, self.labels, expected_size=20)
         self.assertEqual(report["n"], 20)
         self.assertEqual(tuple(report["image_shape"]), (20, 28, 28))
+        self.assertEqual(report["image_dtype"], np.dtype(np.uint8))
+        self.assertEqual(report["label_dtype"], np.dtype(np.int64))
         np.testing.assert_array_equal(report["class_counts"], np.full(10, 2))
         self.assertEqual(report["pixel_min"], 0)
         self.assertEqual(report["pixel_max"], 255)
 
+    def test_accepts_unsigned_integer_labels(self) -> None:
+        report = validate_split(self.images, self.labels.astype(np.uint8))
+        self.assertEqual(report["label_dtype"], np.dtype(np.uint8))
+        np.testing.assert_array_equal(report["class_counts"], np.full(10, 2))
+
     def test_rejects_shape_cardinality_and_size(self) -> None:
         for bad_images, bad_labels, size in [
             (self.images.reshape(20, -1), self.labels, None),
+            (np.zeros((20, 28, 27), dtype=np.uint8), self.labels, None),
+            (np.zeros((20, 27, 28), dtype=np.uint8), self.labels, None),
+            (np.zeros((20, 28, 28, 1), dtype=np.uint8), self.labels, None),
             (self.images, self.labels[:-1], None),
             (self.images, self.labels, 21),
         ]:
@@ -47,6 +57,10 @@ class SchemaContractTests(unittest.TestCase):
         bad[-1] = 10
         with self.assertRaises(ValueError):
             validate_split(self.images, bad)
+        low = self.labels.copy()
+        low[0] = -1
+        with self.assertRaises(ValueError):
+            validate_split(self.images, low)
 
 
 if __name__ == "__main__":

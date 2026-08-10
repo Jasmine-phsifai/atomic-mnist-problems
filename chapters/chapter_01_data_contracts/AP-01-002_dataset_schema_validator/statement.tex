@@ -48,7 +48,7 @@ message.  An optional \code{expected\_size} adds an exact cardinality check.
         \begin{itemize}
           \item A balanced fixture returns exact counts and metadata.
   \item Wrong rank/extent, mismatched cardinality, non-uint8 images, non-integral labels, out-of-range labels, and wrong expected size all fail.
-  \item The benchmark reports a violation vector rather than compressing data quality into one arbitrary score.
+  \item The benchmark reports a violation vector rather than compressing data quality into one arbitrary score. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 

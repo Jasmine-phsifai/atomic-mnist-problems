@@ -20,6 +20,8 @@ discarded.  A shuffled epoch applies one seeded permutation before partitioning.
 
 
 Implement a generator over batches of supplied indices.  Validate all inputs,
+rejecting with \code{ValueError} an empty index array, a non-one-dimensional
+index array, or a non-positive batch size;
 copy or permute the input without mutating it, and yield one-dimensional arrays.
 The non-dropping policy must cover every supplied index exactly once.  The
 dropping policy must yield only full batches and discard exactly $r$ samples.

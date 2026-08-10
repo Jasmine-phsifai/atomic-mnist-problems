@@ -46,7 +46,7 @@ def cross_split_duplicates(train: np.ndarray, valid: np.ndarray) -> list[tuple[i
         \begin{itemize}
           \item Known copied rows produce the exact sorted pair list, including repeated duplicates.
   \item Changing one pixel changes the digest; changing dtype also changes the digest domain.
-  \item The benchmark prints duplicate-pair count, affected-validation count, and leakage rate separately.
+  \item The benchmark prints duplicate-pair count, affected-validation count, and leakage rate separately. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 
@@ -55,7 +55,7 @@ def cross_split_duplicates(train: np.ndarray, valid: np.ndarray) -> list[tuple[i
         \begin{itemize}
           \item Use \code{hashlib.sha256}; do not invent a hash function.
   \item A Python row loop is acceptable here because hashing is a per-record boundary, not a numerical kernel.
-  \item Reject rank-zero arrays and incompatible trailing row shapes.
+  \item Reject rank-zero arrays and incompatible trailing row shapes with \code{ValueError}.
         \end{itemize}
 
         \begin{sourcebox}

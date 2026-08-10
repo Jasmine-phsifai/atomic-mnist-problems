@@ -29,7 +29,8 @@ domain, even if NumPy could broadcast it in some accidental configuration.
 
 Implement feature-wise standardization for a rank-two batch.  Accept each
 statistic only as a scalar or exact shape $(D,)$.  Validate finite means and
-strictly positive finite scales.  Reshape accepted feature vectors to $(1,D)$
+strictly positive finite scales, rejecting any other statistic shape or value
+with \code{ValueError}.  Reshape accepted feature vectors to $(1,D)$
 inside the function so the semantic axis is visible in code.
 
 
@@ -53,7 +54,7 @@ inside the function so the semantic axis is visible in code.
         \begin{itemize}
           \item The square ambiguity fixture matches the feature-axis matrix equation exactly.
   \item Scalar statistics work; shapes $(N,1)$ and other accidental broadcasts fail.
-  \item The benchmark prints per-feature residual means and an axis-confusion distance.
+  \item The benchmark prints per-feature residual means and an axis-confusion distance. (Trust-based: the test suite does not machine-check benchmark output.)
         \end{itemize}
         \end{evidencebox}
 

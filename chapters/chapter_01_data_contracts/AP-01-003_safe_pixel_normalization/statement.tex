@@ -20,7 +20,8 @@ where $\tau\in\{\texttt{float32},\texttt{float64}\}$ is selected explicitly.
 
 
 Implement normalization with an explicit floating dtype.  Reject unsupported
-input and output dtypes, preserve shape, do not mutate or share storage with the
+input and output dtypes with \code{ValueError}, preserve shape, do not mutate
+or share storage with the
 source, and make the cast/division order obvious.  The function must work for
 non-contiguous inputs as well as ordinary image batches.
 

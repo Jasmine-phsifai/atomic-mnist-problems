@@ -20,7 +20,8 @@ Two value-equivalent label representations have storage costs
 
 
 Implement checked one-hot construction.  Require a one-dimensional integer
-label vector, positive integer class count, and label domain $[0,K)$.  Return a
+label vector, positive integer class count, and label domain $[0,K)$, rejecting
+violations with \code{ValueError}.  Return a
 C-contiguous array in explicitly requested float32 or float64 dtype.  Do not
 mutate labels.
 
@@ -44,7 +45,7 @@ mutate labels.
         \begin{evidencebox}
         \begin{itemize}
           \item Rows sum to one, argmax recovers labels, and invalid labels/dtypes fail.
-  \item The benchmark prints sparse and dense byte counts plus their ratio for $K=10$.
+  \item The benchmark prints sparse and dense byte counts plus their ratio for $K=10$. (Trust-based: the test suite does not machine-check benchmark output.)
   \item Output contiguity and requested dtype are tested independently of value correctness.
         \end{itemize}
         \end{evidencebox}

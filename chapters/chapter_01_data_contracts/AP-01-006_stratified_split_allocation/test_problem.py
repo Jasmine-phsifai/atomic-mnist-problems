@@ -28,6 +28,13 @@ class StratifiedSplitTests(unittest.TestCase):
         self.assertEqual(train.dtype, np.int64)
         self.assertEqual(valid.dtype, np.int64)
 
+    def test_tied_remainders_favor_smaller_class_label(self) -> None:
+        # Quotas 0.5, 0.5, 1.0 -> remainders tie between classes 0 and 1;
+        # the single leftover seat must go to class 0. / 余数并列时座位归较小类别。
+        labels = np.repeat(np.arange(3, dtype=np.int64), [1, 1, 2])
+        _, valid = stratified_split(labels, valid_fraction=0.5, seed=3)
+        np.testing.assert_array_equal(np.bincount(labels[valid], minlength=3), [1, 0, 1])
+
     def test_seed_reproducibility_without_allocation_drift(self) -> None:
         labels = np.repeat(np.arange(4, dtype=np.int64), [10, 11, 12, 13])
         a_train, a_valid = stratified_split(labels, valid_fraction=0.25, seed=5)

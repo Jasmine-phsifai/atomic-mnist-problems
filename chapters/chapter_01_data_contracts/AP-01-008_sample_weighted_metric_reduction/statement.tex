@@ -18,7 +18,8 @@ special conditions, such as equal batch sizes.  Define the aggregation bias
 
 
 Implement the sample-weighted epoch mean.  Validate one-dimensional, equal-length
-inputs; require positive integer batch sizes and finite means.  Accumulate in
+inputs; require positive integer batch sizes and finite means, rejecting
+violations with \code{ValueError}.  Accumulate in
 float64 even when the input means are float32.  Return a Python \code{float}.
 
 

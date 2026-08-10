@@ -20,7 +20,8 @@ from equal values or printed representations.
 
 Using official PyTorch conversion APIs, return a shared CPU tensor and an owned
 CPU tensor.  Preserve shape and supported NumPy dtype.  Reject non-writeable or
-non-C-contiguous inputs so the educational alias contract remains unambiguous.
+non-C-contiguous inputs with \code{ValueError} so the educational alias
+contract remains unambiguous.
 Do not move either tensor to a GPU in this problem.
 
 

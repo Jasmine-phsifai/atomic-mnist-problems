@@ -32,6 +32,15 @@ class NormalizationContractTests(unittest.TestCase):
         self.assertEqual(np.unique(actual).size, 256)
         self.assertTrue(np.all((0.0 <= actual) & (actual <= 1.0)))
         np.testing.assert_allclose(actual, source.astype(np.float64) / 255.0, rtol=0.0, atol=0.0)
+        actual32 = normalize_uint8(source, dtype=np.float32)
+        self.assertEqual(np.unique(actual32).size, 256)
+
+    def test_default_dtype_and_keyword_only(self) -> None:
+        source = np.arange(4, dtype=np.uint8).reshape(2, 2)
+        actual = normalize_uint8(source)
+        self.assertEqual(actual.dtype, np.float32)
+        with self.assertRaises(TypeError):
+            normalize_uint8(source, np.float64)  # dtype is keyword-only. / dtype 仅接受关键字传参。
 
     def test_rejects_bad_dtypes(self) -> None:
         with self.assertRaises(ValueError):

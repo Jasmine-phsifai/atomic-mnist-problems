@@ -40,6 +40,14 @@ class TensorFlowBoundaryTests(unittest.TestCase):
         with self.assertRaises((TypeError, ValueError)):
             tensor_to_numpy_snapshot(tf.Variable([1.0, 2.0]))
 
+    def test_rejects_non_eager_tensor(self) -> None:
+        @tf.function
+        def call_inside_graph(x):
+            return tensor_to_numpy_snapshot(x)
+
+        with self.assertRaises((TypeError, ValueError)):
+            call_inside_graph(tf.constant([1.0, 2.0]))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

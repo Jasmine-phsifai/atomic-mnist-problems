@@ -33,6 +33,23 @@ class FingerprintLeakageTests(unittest.TestCase):
         self.assertNotEqual(h_base, fingerprint_rows(changed)[0])
         self.assertNotEqual(h_base, fingerprint_rows(wider)[0])
 
+    def test_shape_and_dtype_are_in_digest_domain(self) -> None:
+        flat = np.array([[1, 2, 3, 4]], dtype=np.uint8)       # row shape (4,)
+        square = np.array([[[1, 2], [3, 4]]], dtype=np.uint8)  # same bytes, row shape (2, 2)
+        self.assertEqual(flat[0].tobytes(), square[0].tobytes())
+        self.assertNotEqual(fingerprint_rows(flat)[0], fingerprint_rows(square)[0])
+        signed = np.array([[-1, 2]], dtype=np.int8)
+        unsigned = np.array([[255, 2]], dtype=np.uint8)
+        self.assertEqual(signed[0].tobytes(), unsigned[0].tobytes())
+        self.assertNotEqual(fingerprint_rows(signed)[0], fingerprint_rows(unsigned)[0])
+
+    def test_one_digest_per_first_axis_record(self) -> None:
+        rows = np.array([[[1, 2]], [[3, 4]], [[1, 2]]], dtype=np.uint8)
+        digests = fingerprint_rows(rows)
+        self.assertEqual(len(digests), 3)
+        self.assertEqual(digests[0], digests[2])
+        self.assertNotEqual(digests[0], digests[1])
+
     def test_rejects_incompatible_rows(self) -> None:
         with self.assertRaises(ValueError):
             fingerprint_rows(np.array(3))

@@ -21,6 +21,7 @@ class MetricReductionTests(unittest.TestCase):
         sizes = np.array([64, 64, 2], dtype=np.int64)
         actual = sample_weighted_mean(means, sizes)
         oracle = float(np.repeat(means.astype(np.float64), sizes).mean())
+        self.assertEqual(type(actual), float)
         self.assertAlmostEqual(actual, oracle, places=14)
         self.assertNotAlmostEqual(actual, float(means.mean()), places=4)
 
@@ -33,8 +34,11 @@ class MetricReductionTests(unittest.TestCase):
         cases = [
             (np.array([1.0]), np.array([1, 2])),
             (np.array([[1.0]]), np.array([1])),
+            (np.array([1.0, 2.0]), np.array([[1, 2]])),
             (np.array([np.nan]), np.array([1])),
+            (np.array([np.inf]), np.array([1])),
             (np.array([1.0]), np.array([0])),
+            (np.array([1.0]), np.array([-2])),
             (np.array([1.0]), np.array([1.5])),
         ]
         for means, sizes in cases:
