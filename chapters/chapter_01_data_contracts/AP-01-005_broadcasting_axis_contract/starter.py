@@ -46,25 +46,38 @@ def standardize_features(
     if isinstance(mean, np.ndarray):
         if mean.shape[0] != D:
             raise ValueError(f"mean is a numpy array, but expected mean of shape ({D},), got {mean.shape}")
-        if not np.isfinite(mean):
+        if not np.all(np.isfinite(mean)):
             raise ValueError("mean is a legal-sized numpy array, but contains NAN or inf values.")
     else:
         if not np.isfinite(mean):
             raise ValueError(f"mean is a float, got illegal {mean}")
 
-    MeanMatrix = (np.ones((N,1)) @ mean.reshape((1,D)) if isinstance(mean,np.ndarray) else np.ones((N,D)) * (mean).astype(np.float64))
+    ## MeanMatrix = (np.ones((N,1)) @ mean.reshape((1,D))) if isinstance(mean,np.ndarray) else np.ones((N,D)) * (np.float64(mean))
 
     if isinstance(scale, np.ndarray):
         if scale.shape[0] != D:
             raise ValueError(f"scale is a numpy array, but expected scale of shape ({D},), got {scale.shape}")
-        if not np.isfinite(scale):
+        if not np.all(np.isfinite(scale)):
             raise ValueError("scale is a legal-sized numpy array, but contains NAN or inf values.")
+        if np.any(scale <= 0):
+            raise ValueError(f"scale is a legal-sized numpy array, but contains non-positive values {scale}")
     else:
         if not np.isfinite(scale):
             raise ValueError(f"scale is a float, got illegal {scale}")
         elif scale < 0:
             raise ValueError(f"scale cannot be negative, got {scale}")
+        elif scale == 0: # float equality . Why t is this even suggested? 
+            raise ValueError(f"scale is zero, got {scale}")
 
-    ScaleMatrix = (np.diag([(1.0.astype(np.float64)/i) for i in scale])) if isinstance(scale,np.ndarray) else np.eye(D) * ((1.0.astype(np.float64))/scale)
+    ## ScaleMatrix = (np.diag([(np.float64(1.0)/np.float64(i)) for i in scale])) if isinstance(scale,np.ndarray) else np.eye(D) * (np.float64(1.0)/np.float64(scale))
 
-    return (x - MeanMatrix) @ ScaleMatrix
+    ## Formerreturn = ((x - MeanMatrix) @ ScaleMatrix)
+
+    #Focus on BroadCasting instead of matrical tricks.
+
+    Vectorized = lambda V: np.ones((1,D)) * (np.float64(V)) if isinstance(V,float) else V.reshape((1,D))
+
+    return (x-Vectorized(mean)) / Vectorized(scale)
+    
+
+
