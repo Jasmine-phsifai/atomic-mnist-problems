@@ -3,6 +3,7 @@
 ## What this repo is
 
 A personal learning repo for atomic MNIST exercises — not production code. Mistakes are part of the record: buggy drafts and wrong turns get committed on purpose, with their diagnosis in the commit message.
+all **starter.py**s' context **under ##TODO** is supposedly for the user to accomplish. When it's glitchy, it's the user's code problem worth recording, not yours to fix by the way. It shouldn't be viewed naturally as a "correct approach", and not a valid supportive evidence for explanation on other problems, only a reference, a user's approach.
 
 ## How to explain
 
@@ -58,6 +59,66 @@ A contract test verifies exactly the stated contract — no less, no more.
 - Constraints that tests cannot enforce (e.g. "do not mutate global RNG
   state", "write the derivation as comments") are trust-based; the statement
   must present them as such.
+
+## Explaining a single problem
+
+Use this procedure when asked to explain one problem (e.g. "explain AP-01-004").
+The goal is to make the problem understandable cold — including jargon, the
+math, the contract, the tests, the benchmark, and what the implementation
+actually needs to do.
+
+### Steps
+
+1. **Read all four files first**: `statement.tex`, `starter.py`,
+   `test_problem.py`, `benchmark.py`. Do not explain from memory or from
+   just one file.
+
+2. **Structure the explanation** with these sections, in order:
+
+   a. **Title & core idea** — one sentence that names the problem and states
+      the central insight.
+
+   b. **Noun / expression glossary** — a table of every technical term in the
+      problem statement that a learner might stumble on: English term,
+      Chinese equivalent, what it specifically means in this problem's
+      context. Do not skip "obvious" terms.
+
+   c. **Mathematical statement** — restate the formula in plain language,
+      explain each symbol, and point out what the math *does not* specify
+      (this is usually where the engineering gap lives).
+
+   d. **Code problem / contract** — list every requirement the function must
+      satisfy: input validation, output values, ownership/memory rules,
+      error types. Quote the function signature.
+
+   e. **Constraints** — what you are *not* allowed to do (banned methods,
+      required library primitives, etc.).
+
+   f. **Test-by-test walkthrough** — go through each test in
+      `test_problem.py` and explain: what input it builds, what assertion it
+      checks, and which contract clause it enforces. Name the test function
+      so the reader can find it.
+
+   g. **Benchmark walkthrough** — explain what `benchmark.py` does, why it
+      is not a performance benchmark (when it isn't), and what a human
+      reader is supposed to learn by running it. Point out trust-based
+      evidence (things tests cannot machine-check).
+
+   h. **Theory–engineering gap** — explain the gap in the problem's own
+      words and what it means intuitively. This is the "why this problem
+      exists" section.
+
+   i. **Implementation direction** — describe at a high level what the
+      function in `starter.py` needs to do and which NumPy primitives are
+      relevant. Do not write the full solution unless asked.
+
+3. **Correlate across files** — explicitly connect what `statement.tex`
+   promises to what `test_problem.py` checks and what `benchmark.py`
+   demonstrates. Show the mapping, don't assume the reader sees it.
+
+4. **Keep starter.py and statement.tex as authority**. If something is
+   ambiguous, say it's ambiguous and point to both files. Do not invent
+   constraints that aren't written down.
 
 ## Concurrent agents
 
