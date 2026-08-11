@@ -33,5 +33,5 @@ def normalize_uint8(
         raise ValueError(f"expected images of shape (batchsize,length,width) or (length,width), got {images.shape[-3:]}")
     if dtype not in (np.float64, np.float32):
         raise ValueError(f"expected dtype to be float32 or float64, got {dtype}")
-    result= (images/255).astype(dtype,copy=True)
+    result= (images/(255).astype(dtype)).astype(dtype,copy=True)
     return result
