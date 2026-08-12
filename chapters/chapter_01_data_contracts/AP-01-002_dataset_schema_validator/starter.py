@@ -47,7 +47,7 @@ def validate_split(
         raise ValueError(f"expected non-empty images and labels, got images.size {images.size} and labels.size {labels.size}")
     if images.dtype != np.uint8:
         raise ValueError(f"expected images of dtype uint8, got {images.dtype}")
-    if not np.issubdtype(labels.dtype, np.integer):
+    if (not np.issubdtype(labels.dtype, np.integer)):
         raise ValueError(f"expected labels of numpy integer dtype, got {labels.dtype}")
     """
     Former approach like this
