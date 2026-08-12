@@ -28,15 +28,16 @@ def validate_split(
     - 只有先校验标签范围，才能安全使用 ``np.bincount``。
     """
     # TODO: reject instead of silently reshaping or casting. / 应拒绝错误输入，而非静默整形或转换。
-    if expected_size:
+    if expected_size is not None:  ## fix
         if not isinstance(expected_size, int):
-            if isinstance(expected_size, np.integer):
-                raise ValueError(f"expected standardized int, got numpy int {expected_size.dtype}")
             raise ValueError(f"expected None or standard integers, got {expected_size.__class__.__name__}")
-
-    if images.ndim != 3 or images.shape[1:] != (28, 28):
+        elif expected_size <= 0:
+            raise ValueError(f"expected positive integer, got {expected_size}")
+        elif expected_size == True:  ## new
+            expected_size = 1
+    if images.ndim!=3 or images.shape[1:]!=(28,28):
         raise ValueError(f"expected images of shape (N,28,28), got {images.shape[:4]}")
-    if labels.ndim != 1:
+    if labels.ndim!=1:
         raise ValueError(f"expected labels of shape (N,), got {labels.shape[:2]}")
     if images.shape[0] != labels.shape[0]:
         raise ValueError(f"expected images, labels to have the same length/patchsize, got {images.shape[0]} vs {labels.shape[0]}")
@@ -45,7 +46,7 @@ def validate_split(
             raise ValueError(f"expected images, labels to have length/patchsize {expected_size}, got images and labels' batchsize {images.shape[0]} vs expected size {expected_size}")
     if images.size == 0 or labels.size == 0:
         raise ValueError(f"expected non-empty images and labels, got images.size {images.size} and labels.size {labels.size}")
-    if images.dtype != np.uint8:
+    if images.dtype!=np.uint8:
         raise ValueError(f"expected images of dtype uint8, got {images.dtype}")
     if (not np.issubdtype(labels.dtype, np.integer)):
         raise ValueError(f"expected labels of numpy integer dtype, got {labels.dtype}")
@@ -69,7 +70,8 @@ def validate_split(
     raise NotImplementedError("AP-01-002")
     """
 
-    newRecords = np.bincount(labels, minlength=10)
+    # Second iteration approach like this
+    """newRecords = np.bincount(labels, minlength=10)
     if len(newRecords) != 10:
         raise ValueError(f"unexpected integer label value outside 0~9, got {len(newRecords)-1} that went out of range")
     newResultDict = {
@@ -82,3 +84,18 @@ def validate_split(
         "class_counts": newRecords
     }
     return newResultDict
+    """
+    # third iteration approach like this
+    if np.any(labels < 0) or np.any(labels > 9):
+        raise ValueError("unexpected integer label value outside 0~9")
+    Record_3 = np.bincount(labels, minlength=10)
+    newResultDict_3 = {
+        "n": images.shape[0],
+        "image_shape": images.shape,
+        "image_dtype": images.dtype,
+        "label_dtype": labels.dtype,
+        "pixel_min": images.min(),
+        "pixel_max": images.max(),
+        "class_counts": Record_3
+    }
+    return newResultDict_3
