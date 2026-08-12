@@ -28,6 +28,10 @@ all **starter.py**s' context **under ##TODO** is supposedly for the user to acco
 - Back claims with runnable code examples rather than prose alone.
 - Decompose big problems into small ones. Establish understanding of the concepts before writing code — do not rush to implementation.
 - Do not skip steps, even ones that look trivial.
+- Every assessment of a learner submission must walk through the submitted code
+  row by row. Explain what each row or tightly connected block does, what is
+  correct, what is defective or ambiguous, what input exposes it, and why.
+  Assess like a teacher; a high-level verdict alone is insufficient.
 
 ## Git workflow
 
