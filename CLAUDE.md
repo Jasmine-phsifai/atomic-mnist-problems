@@ -5,6 +5,22 @@
 A personal learning repo for atomic MNIST exercises — not production code. Mistakes are part of the record: buggy drafts and wrong turns get committed on purpose, with their diagnosis in the commit message.
 all **starter.py**s' context **under ##TODO** is supposedly for the user to accomplish. When it's glitchy, it's the user's code problem worth recording, not yours to fix by the way. It shouldn't be viewed naturally as a "correct approach", and not a valid supportive evidence for explanation on other problems, only a reference, a user's approach.
 
+## Learner-code ownership
+
+- `starter.py` is learner-owned. Change its learner implementation only when
+  the user supplies a new attempt for that file.
+- Transcribe the supplied attempt without correcting its logic, API choices,
+  messages, naming, or other glitches. Only normalize indentation, tabs, blank
+  space, and blank lines when chat-box formatting makes that necessary for a
+  faithful Python file.
+- Commit and push learner attempts even when they are incomplete, inefficient,
+  or failing. The Git history intentionally records errors; describe the
+  observed behavior and test results factually in the commit message.
+- Benchmarks and LaTeX problem materials are instructor-owned and may be edited
+  independently. Do not use that permission to silently repair `starter.py`.
+- Prefer small, atomic commits and pushes so each learner attempt and each
+  instructor-side benchmark or statement change remains independently visible.
+
 ## How to explain
 
 - Combine angles: math, deep learning, numerics, engineering practice, security.
