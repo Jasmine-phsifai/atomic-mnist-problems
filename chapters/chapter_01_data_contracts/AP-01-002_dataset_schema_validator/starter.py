@@ -28,30 +28,37 @@ def validate_split(
     - 只有先校验标签范围，才能安全使用 ``np.bincount``。
     """
     # TODO: reject instead of silently reshaping or casting. / 应拒绝错误输入，而非静默整形或转换。
-    imgshape=images.shape
-    lblshape=labels.shape
-    if expected_size is not None and (expected_size <= 0 or expected_size.is_integer() == False):
-        raise ValueError(f"expected_size must be a positive integer, got {expected_size}")
-    if len(imgshape)!=images.ndim or len(lblshape)!=labels.ndim: #zombie code, but the problem explicitly requested this conservative checking.
-        raise ValueError(f"expected images.ndim={len(imgshape)} and labels.ndim={len(lblshape)}, got {images.ndim} and {labels.ndim}")
-    if len(imgshape)!=3 or imgshape[1:]!=(28,28):
-        raise ValueError(f"expected images of shape (N,28,28), got {imgshape}[:4]")
-    if len(lblshape)!=1:
-        raise ValueError(f"expected labels of shape (N,), got {lblshape}[:2]")
-    if imgshape[0] != lblshape[0] or (expected_size is not None and (imgshape[0]!= expected_size or lblshape[0]!= expected_size)):
-        raise ValueError(f"expected images, labels, and expected_size to have the same length/patchsize or expected_size to be None, got {imgshape[0]} vs {lblshape[0]} vs {expected_size}")
-    if images.dtype!=np.uint8:
+    if expected_size:
+        if not isinstance(expected_size, int):
+            if isinstance(expected_size, np.integer):
+                raise ValueError(f"expected standardized int, got numpy int {expected_size.dtype}")
+            raise ValueError(f"expected None or standard integers, got {expected_size.__class__.__name__}")
+
+    if images.ndim != 3 or images.shape[1:] != (28, 28):
+        raise ValueError(f"expected images of shape (N,28,28), got {images.shape[:4]}")
+    if labels.ndim != 1:
+        raise ValueError(f"expected labels of shape (N,), got {labels.shape[:2]}")
+    if images.shape[0] != labels.shape[0]:
+        raise ValueError(f"expected images, labels to have the same length/patchsize, got {images.shape[0]} vs {labels.shape[0]}")
+    if expected_size:
+        if images.shape[0] != expected_size:
+            raise ValueError(f"expected images, labels to have length/patchsize {expected_size}, got images and labels' batchsize {images.shape[0]} vs expected size {expected_size}")
+    if images.size == 0 or labels.size == 0:
+        raise ValueError(f"expected non-empty images and labels, got images.size {images.size} and labels.size {labels.size}")
+    if images.dtype != np.uint8:
         raise ValueError(f"expected images of dtype uint8, got {images.dtype}")
-    if (not np.issubdtype(labels.dtype, np.integer)):
+    if not np.issubdtype(labels.dtype, np.integer):
         raise ValueError(f"expected labels of numpy integer dtype, got {labels.dtype}")
+    """
+    Former approach like this
     projection= {k: np.eye(10)[k] for k in range(10)}
     try:
         records = sum((projection[i] for i in labels))
     except KeyError as e:
         raise ValueError(f"unexpected label value outside 0~9, got {e.args[0]} that went out of range") # todo: How can I catch the keyerror and get the triggering unexpected value?
     ResultDict={
-        "n": imgshape[0],
-        "image_shape": imgshape,
+        "n": images.shape[0],
+        "image_shape": images.shape,
         "image_dtype": images.dtype,
         "label_dtype": labels.dtype,
         "pixel_min": images.min(),
@@ -60,3 +67,18 @@ def validate_split(
     }
     return ResultDict
     raise NotImplementedError("AP-01-002")
+    """
+
+    newRecords = np.bincount(labels, minlength=10)
+    if len(newRecords) != 10:
+        raise ValueError(f"unexpected integer label value outside 0~9, got {len(newRecords)-1} that went out of range")
+    newResultDict = {
+        "n": images.shape[0],
+        "image_shape": images.shape,
+        "image_dtype": images.dtype,
+        "label_dtype": labels.dtype,
+        "pixel_min": images.min(),
+        "pixel_max": images.max(),
+        "class_counts": newRecords
+    }
+    return newResultDict
