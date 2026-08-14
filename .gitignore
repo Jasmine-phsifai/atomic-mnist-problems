@@ -35,3 +35,7 @@ chapters/**/diagnostic_*.png
 
 # Superseded personal notes; CLAUDE.md is the tracked repo guide.
 .agent.md
+
+# Imported Kannada-MNIST study package: keep archive and nested VCS metadata local.
+/kannada-mnist-study/*.zip
+/kannada-mnist-study/.git/
