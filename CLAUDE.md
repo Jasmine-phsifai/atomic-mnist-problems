@@ -18,10 +18,13 @@ all **starter.py**s' context **under ##TODO** is supposedly for the user to acco
 - Commit and push learner attempts even when they are incomplete, inefficient,
   or failing. The Git history intentionally records errors; describe the
   observed behavior and test results factually in the commit message.
-- Unless the user explicitly requests an unmerged review branch, finish each
-  Git task by integrating its atomic commits into `main` and pushing `main`.
-  A feature branch or draft PR may be used as an intermediate safety step, but
-  do not report the work as delivered while it exists only outside `main`.
+- Work directly on `main` unless the user explicitly requests another branch.
+  Do not leave task branches locally or remotely after delivery.
+- Fetch `origin` before editing and again immediately before pushing because
+  the user also commits frequently. Fast-forward to the latest `origin/main`
+  before starting; if it advances during the task, integrate it before push.
+- Finish every Git task by pushing its atomic commits to `main`. Do not report
+  the work as delivered while it exists only on a side branch.
 - Benchmarks and LaTeX problem materials are instructor-owned and may be edited
   independently. Do not use that permission to silently repair `starter.py`.
 - Prefer small, atomic commits and pushes so each learner attempt and each
