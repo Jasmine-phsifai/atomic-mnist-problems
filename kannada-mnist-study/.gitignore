@@ -1,0 +1,25 @@
+.DS_Store
+Thumbs.db
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+.venv-*/
+
+# The dataset must stay outside this repository.
+/data/
+/dataset/
+/datasets/
+
+# Generated training artifacts stay local.
+/outputs/
+/checkpoints/
+*.pt
+*.pth
+*.keras
+*.npz.tmp
+
+# Full third-party books are kept in the working tree, not duplicated in Git history.
+/references/d2l/dive-into-deep-learning.pdf
