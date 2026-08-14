@@ -17,8 +17,9 @@
 | `numpy_scipy/` | 纯数组实现，SciPy 用于独立梯度检查 |
 | `pytorch/` | 小型 CNN 与自定义 PyTorch 训练循环练习 |
 | `tensorflow/` | 小型 CNN 与 `GradientTape` 训练循环练习 |
+| `data/` | 随仓库提供的官方 Kannada-MNIST NPZ 数据 |
 | `references/` | 官方 PyTorch/TensorFlow 教程快照与 D2L 离线副本 |
-| `DATASET.md` | 外置 Kannada-MNIST 数据契约与来源 |
+| `DATASET.md` | Kannada-MNIST 数据契约、布局与来源 |
 | `check_dataset.py` | 在开始训练前验证形状、标签和像素范围 |
 
 仓库没有 `src/`、包构建系统、配置框架或隐藏的训练器。每个实现目录只有几份直接
@@ -43,17 +44,16 @@ python -m pip install -r numpy_scipy/requirements.txt
 PyTorch 和 TensorFlow 的 CPU/GPU 安装命令分别写在各自目录的 README 中。第一次
 学习建议从 CPU 环境开始；模型很小，GPU 并不是理解训练循环的前置条件。
 
-## 数据放在仓库外
+## 数据随仓库提供
 
-下载并解压官方 `.npz` 版本后，设置绝对路径：
+仓库已包含 Zenodo 发布的官方 `.npz` 数据。克隆后可以直接验证：
 
 ```bash
-export KANNADA_MNIST_DATA_DIR=/absolute/path/to/Kannada_MNIST_npz
-python check_dataset.py
+python check_dataset.py --data-dir data/Kannada_MNIST_npz/Kannada_MNIST
 ```
 
-仓库不会下载、复制或提交训练数据。完整文件名、许可证和校验规则见
-[`DATASET.md`](DATASET.md)。
+三套训练程序使用同一个 `--data-dir` 路径。完整文件名、来源、许可证和校验规则见
+[`DATASET.md`](DATASET.md)。Dig-MNIST 作为分布外测试集保存在相邻目录。
 
 ## 建议的实现顺序
 
@@ -69,9 +69,8 @@ PyTorch 和 TensorFlow 的自定义训练循环。三套实现应共享相同的
 
 ## 版本控制约定
 
-- 数据集、虚拟环境、checkpoint 和输出结果不进入 Git；
+- 官方 Kannada-MNIST/Dig-MNIST 数据进入 Git；虚拟环境、checkpoint 和输出结果不进入；
 - 小型官方教程快照进入 Git并保留上游许可证；
-- D2L PDF 留在工作区但被 Git 忽略，避免同一份 40+ MB PDF 同时出现在工作树和
-  Git 对象库中；
+- D2L PDF 在本仓库中没有重复副本，因此连同校验和与许可证一起进入 Git；
 - 每个学习里程碑单独提交，例如 `implement numpy softmax` 或
   `add pytorch train_one_epoch`。

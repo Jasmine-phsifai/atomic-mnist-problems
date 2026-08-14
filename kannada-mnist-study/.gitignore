@@ -8,8 +8,8 @@ __pycache__/
 .venv/
 .venv-*/
 
-# The dataset must stay outside this repository.
-/data/
+# Alternative local dataset directories stay outside this repository. The
+# official NPZ files under /data/ are intentionally bundled and tracked.
 /dataset/
 /datasets/
 
@@ -20,6 +20,3 @@ __pycache__/
 *.pth
 *.keras
 *.npz.tmp
-
-# Full third-party books are kept in the working tree, not duplicated in Git history.
-/references/d2l/dive-into-deep-learning.pdf

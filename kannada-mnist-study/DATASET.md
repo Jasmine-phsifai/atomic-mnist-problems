@@ -12,38 +12,39 @@
 60,000 个训练样本和 10,000 个测试样本，每张图像为 `28 x 28` 灰度图，标签为
 `0..9`。官方包还包含可作为分布外测试集的 Dig-MNIST。
 
-## 外置目录布局
+## 仓库内目录布局
 
-把压缩包解压到仓库之外，并让 `KANNADA_MNIST_DATA_DIR` 指向含有这些文件的目录：
+官方压缩包已按原始层次解压到本仓库：
 
 ```text
-Kannada_MNIST_npz/
-├── X_kannada_MNIST_train.npz
-├── y_kannada_MNIST_train.npz
-├── X_kannada_MNIST_test.npz
-├── y_kannada_MNIST_test.npz
-├── X_dig_MNIST.npz          # 可选
-└── y_dig_MNIST.npz          # 可选
+data/Kannada_MNIST_npz/
+├── Kannada_MNIST/
+│   ├── X_kannada_MNIST_train.npz
+│   ├── y_kannada_MNIST_train.npz
+│   ├── X_kannada_MNIST_test.npz
+│   └── y_kannada_MNIST_test.npz
+└── Dig_MNIST/
+    ├── X_dig_MNIST.npz
+    └── y_dig_MNIST.npz
 ```
 
-如果解压后多了一层目录，只需把环境变量指向真正包含 `.npz` 文件的那一层。
+训练程序的 `--data-dir` 应指向 `data/Kannada_MNIST_npz/Kannada_MNIST`。
+`Dig_MNIST/` 是独立的分布外测试集，不属于标准 train/test 划分。
 
 ## 下载示例
 
-以下命令只是示例；请把目标位置换成仓库外的目录：
+以下命令用于从官方来源重建仓库内的数据目录：
 
 ```bash
-mkdir -p /absolute/path/to/kannada-mnist-data
-cd /absolute/path/to/kannada-mnist-data
 curl -L 'https://zenodo.org/records/3359691/files/Kannada_MNIST_npz.zip?download=1' \
   -o Kannada_MNIST_npz.zip
-unzip Kannada_MNIST_npz.zip
+unzip Kannada_MNIST_npz.zip -d data
 ```
 
 Zenodo 对原始压缩包公布的 MD5 为：
 
 ```text
-28423b1ce60e01c00fd63b3c1a05d10  Kannada_MNIST_npz.zip
+28423b1ce60e01c00fd63b3c1a05d10e  Kannada_MNIST_npz.zip
 ```
 
 ## 训练前检查
@@ -51,12 +52,10 @@ Zenodo 对原始压缩包公布的 MD5 为：
 在任意一个已安装 NumPy 的虚拟环境中运行：
 
 ```bash
-export KANNADA_MNIST_DATA_DIR=/absolute/path/to/Kannada_MNIST_npz
-python check_dataset.py
+python check_dataset.py --data-dir data/Kannada_MNIST_npz/Kannada_MNIST
 ```
 
 检查器会验证：文件存在、每个 `.npz` 只有一个数组、图像尺寸是 `28 x 28`、样本数
 匹配、标签覆盖 `0..9`、像素范围处于 `0..255`，以及官方训练/测试样本数。
 
-训练代码只读取这个目录。所有输出应写到仓库根目录下被忽略的 `outputs/`，不要写回
-数据目录。
+训练代码只读取这个目录。所有输出应写到被忽略的 `outputs/`，不要写回数据目录。

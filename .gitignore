@@ -39,3 +39,7 @@ chapters/**/diagnostic_*.png
 # Imported Kannada-MNIST study package: keep archive and nested VCS metadata local.
 /kannada-mnist-study/*.zip
 /kannada-mnist-study/.git/
+
+# The official Kannada-MNIST NPZ files are intentionally bundled and tracked.
+!/kannada-mnist-study/data/
+!/kannada-mnist-study/data/**
