@@ -1,5 +1,7 @@
 # Repo Guide
 
+NEVER FIX THE STARTER's TODO part!!!!!!! IT's FOR THE USER!
+
 ## What this repo is
 
 A personal learning repo for atomic MNIST exercises — not production code. Mistakes are part of the record: buggy drafts and wrong turns get committed on purpose, with their diagnosis in the commit message.
