@@ -31,6 +31,42 @@ def iter_minibatches(
     - ``rng.permutation(indices)`` 可保护调用方原始顺序。
     - ``range(0, stop, batch_size)`` 便于表达批次切片边界。
     """
+    #verification
+    if not isinstance(seed, int):
+        raise TypeError(f"seed must be an int, got {type(seed)}")
+    if not isinstance(shuffle, bool):
+        raise TypeError(f"shuffle must be a bool, got {type(shuffle)}")
+    if not isinstance(drop_last, bool):
+        raise TypeError(f"drop_last must be a bool, got {type(drop_last)}")
+    if not isinstance(indices, np.ndarray):
+        raise TypeError(f"indices must be a np.ndarray, got {type(indices)}")
+    if indices.size ==0:
+        raise ValueError("indices must not be empty")
+    if np.isinfinite(indices).any():
+        raise ValueError("indices must not contain infinite values")
+    if not isinstance(batch_size, int):
+        raise TypeError(f"batch_size must be an int, got {type(batch_size)}")
+    if batch_size <= 0:
+        raise ValueError(f"batch_size must be positive, got {batch_size}")
+    if batch_size > len(indices):
+        raise ValueError(f"batch_size must not exceed the number of indices, got {batch_size} > {len(indices)}")
+
+    # 
+    Randomizer_007 = np.random.default_rng(seed)
+    if shuffle:
+        indices_processed = Randomizer_007.permutation(indices.copy())
+    else:
+        indices_processed = indices.copy()
+    indices_Length = len(indices_processed)
+    cursor = 0
+    while cursor + batch_size <= indices_Length:
+        current_batch = indices_processed[cursor : cursor + batch_size]
+        cursor += batch_size
+        yield current_batch
+    if indices_Length - cursor > 0 and not drop_last:
+        current_batch = indices_processed[cursor : ]
+        yield current_batch
+    
     # TODO: validate, permute once, and implement the tail policy. / 校验后只置换一次，并实现尾批策略。
     raise NotImplementedError("AP-01-007")
     yield np.empty(0, dtype=np.int64)  # Keeps the starter typed as a generator. / 保持生成器类型。
