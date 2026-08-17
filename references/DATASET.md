@@ -22,6 +22,9 @@ $MNIST_DATA_DIR/
   ... files named by the manifest ...
 ```
 
-No dataset is copied into this repository and no test depends on a network
-download. Synthetic arrays exercise the same shape, dtype, label, and split
-contracts.
+The official NPZ serializations are bundled in the repository at
+`kannada-mnist-study/data/Kannada_MNIST_npz/` (Kannada-MNIST train/test and
+Dig-MNIST), so no network download is required. The `$MNIST_DATA_DIR`
+manifest layout above remains the taught boundary for data-loading problems:
+contract tests still run on synthetic arrays that exercise the same shape,
+dtype, label, and split contracts, independent of the bundled files.

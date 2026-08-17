@@ -33,7 +33,9 @@ entire MNIST training system.
 - `test_problem.py` is an executable contract test.
 - `benchmark.py` prints or plots diagnostic evidence; it is not a speed contest
   unless the statement explicitly says so.
-- Dataset files remain outside the repository. Tests create synthetic fixtures.
+- The official Kannada-MNIST NPZ files are bundled under
+  `kannada-mnist-study/data/Kannada_MNIST_npz/`. Contract tests still create
+  synthetic fixtures and never touch the network.
 - No C or Cython is used in these chapters. The targeted work is either array
   semantics or short numerical kernels; a lower-level extension would obscure
   the lesson without a demonstrated bottleneck.
@@ -89,7 +91,9 @@ the learner has solved the exercises.
 ## External Kannada-MNIST data
 
 The exercises are dataset-adapter friendly and use Kannada-MNIST as the concrete
-case. Keep the downloaded data elsewhere and expose it explicitly:
+case. The official NPZ files are bundled at
+`kannada-mnist-study/data/Kannada_MNIST_npz/`; to point the exercises at a
+different local copy, expose it explicitly:
 
 ```bash
 export MNIST_DATA_DIR=/absolute/path/to/Kannada_MNIST
