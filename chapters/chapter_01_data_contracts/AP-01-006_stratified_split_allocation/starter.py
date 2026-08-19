@@ -51,7 +51,7 @@ def stratified_split(
     train_indices = np.array([], dtype=np.int64)
     valid_indices = np.array([], dtype=np.int64)
     rng_local_006 = np.random.default_rng(seed)
-    for c, quota in zip(classes, BasicQuotas):
+    for c, quota in zip(classes, WholeQuotas):
         c_indexed_original = np.where(labels == c)[0]
         shuffled_permutation = rng_local_006.permutation(c_indexed_original)
         valid_indices = np.concatenate((valid_indices, shuffled_permutation[:quota]))
