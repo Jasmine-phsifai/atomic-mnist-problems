@@ -33,24 +33,25 @@ def iter_minibatches(
     """
     #verification
     if not isinstance(seed, int):
-        raise TypeError(f"seed must be an int, got {type(seed)}")
+        raise ValueError(f"seed must be an int, got {type(seed)}")
+    if isinstance(seed, bool):
+        raise ValueError("seed must be an int, got bool")
     if not isinstance(shuffle, bool):
-        raise TypeError(f"shuffle must be a bool, got {type(shuffle)}")
+        raise ValueError(f"shuffle must be a bool, got {type(shuffle)}")
     if not isinstance(drop_last, bool):
-        raise TypeError(f"drop_last must be a bool, got {type(drop_last)}")
+        raise ValueError(f"drop_last must be a bool, got {type(drop_last)}")
     if not isinstance(indices, np.ndarray):
-        raise TypeError(f"indices must be a np.ndarray, got {type(indices)}")
+        raise ValueError(f"indices must be a np.ndarray, got {type(indices)}")
+    if indices.ndim != 1:
+        raise ValueError(f"indices must be 1D, got {indices.ndim}D")
     if indices.size ==0:
         raise ValueError("indices must not be empty")
-    if np.isinfinite(indices).any():
+    if np.isinf(indices).any():
         raise ValueError("indices must not contain infinite values")
     if not isinstance(batch_size, int):
-        raise TypeError(f"batch_size must be an int, got {type(batch_size)}")
+        raise ValueError(f"batch_size must be an int, got {type(batch_size)}")
     if batch_size <= 0:
         raise ValueError(f"batch_size must be positive, got {batch_size}")
-    if batch_size > len(indices):
-        raise ValueError(f"batch_size must not exceed the number of indices, got {batch_size} > {len(indices)}")
-
     # 
     Randomizer_007 = np.random.default_rng(seed)
     if shuffle:
@@ -66,7 +67,4 @@ def iter_minibatches(
     if indices_Length - cursor > 0 and not drop_last:
         current_batch = indices_processed[cursor : ]
         yield current_batch
-    
     # TODO: validate, permute once, and implement the tail policy. / 校验后只置换一次，并实现尾批策略。
-    raise NotImplementedError("AP-01-007")
-    yield np.empty(0, dtype=np.int64)  # Keeps the starter typed as a generator. / 保持生成器类型。
