@@ -44,6 +44,9 @@ all **starter.py**s' context **under ##TODO** is supposedly for the user to acco
 
 ## Git workflow
 
+If any git command fails (connection reset, push rejected, auth loop, spurious
+whole-file diffs), read `GIT_TROUBLESHOOTING.md` before improvising.
+
 Run in this order after writing code:
 
 1. `git status` and `git diff` — check for unexpected changes (surprise deletions, etc.).
