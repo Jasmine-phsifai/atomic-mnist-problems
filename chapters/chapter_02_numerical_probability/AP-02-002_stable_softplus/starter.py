@@ -23,4 +23,15 @@ def stable_softplus(x: np.ndarray) -> np.ndarray:
     - 正确公式不应依赖屏蔽警告；意外警告本身就是证据。
     """
     # TODO: validate dtype/finiteness and apply the stable identity. / 校验类型与有限性后应用稳定恒等式。
-    raise NotImplementedError("AP-02-002")
+    
+    if not isinstance(x, np.ndarray):
+        raise TypeError("Input must be a numpy ndarray.")
+    if x.size == 0:
+        raise ValueError("Input array must not be empty.")
+    if x.ndim != 1:
+        raise ValueError("Input array must be one-dimensional.")
+    if x.dtype == object:
+        raise TypeError("Input array must have a numeric dtype.")
+    if x.shape[0] != 1:
+        raise ValueError("Input array must have shape (n,) for some n.")
+    return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0)
