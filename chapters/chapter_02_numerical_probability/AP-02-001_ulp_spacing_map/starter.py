@@ -23,4 +23,17 @@ def local_spacing(values: np.ndarray, *, dtype: np.dtype | type) -> np.ndarray:
     - 两个操作数都应使用目标类型，避免意外提升精度。
     """
     # TODO: validate the finite nonnegative domain and preserve dtype. / 校验有限非负定义域并保持类型。
-    raise NotImplementedError("AP-02-001")
+    if not isinstance(values, np.ndarray):
+        raise TypeError(f"Expected np.ndarray, got {type(values)}")
+    if np.issubdtype(values.dtype, np.integer):
+        raise TypeError(f"Expected floating-point array, got integer array with dtype {values.dtype}")
+    if np.isinf(values).any() or np.isnan(values).any():
+        raise ValueError("Input array contains NaN or infinite values")
+    if values.size == 0 or values.ndim > 1:
+        raise ValueError("Input array must be a non-empty 1D array")
+    if values.shape[0] != 1:
+        raise ValueError("Input array must be a 1D array")
+    if np.any(values < 0):
+        raise ValueError("Input array must contain non-negative values only")
+    NextNearestNumber: np.ndarray = np.nextafter(values, np.inf, dtype=dtype)
+    return (NextNearestNumber - values).astype(dtype)
