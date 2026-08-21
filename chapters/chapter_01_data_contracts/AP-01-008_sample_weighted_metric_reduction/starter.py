@@ -46,4 +46,3 @@ def sample_weighted_mean(batch_means: np.ndarray, batch_sizes: np.ndarray) -> fl
     SUM_IN_FLOAT = np.dot(batch_sizes, batch_means)
     TOTAL_WEIGHT = np.sum(batch_sizes, dtype=np.float64)
     return float(SUM_IN_FLOAT / TOTAL_WEIGHT)
-
