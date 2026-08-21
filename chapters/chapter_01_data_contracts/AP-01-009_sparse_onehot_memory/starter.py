@@ -28,4 +28,19 @@ def one_hot(
     - 索引前必须校验标签，避免负索引从末尾回绕。
     """
     # TODO: validate domain and construct the indicator matrix. / 校验定义域并构造指示矩阵。
-    raise NotImplementedError("AP-01-009")
+    
+    if not isinstance(labels, np.ndarray):
+        raise ValueError(f'labels vector is supposed to be numpy array, got {labels.__class__.__name__} unexpected instead.')
+    if not isinstance(num_classes, int):
+        raise ValueError(f'num_classes is supposed to be int, got {num_classes.__class__.__name__} unexpected instead.')
+    if num_classes <= 0:
+        raise ValueError(f'num_classes is supposed to be positive, got {num_classes} unexpected instead.')
+    if labels.ndim != 1:
+        raise ValueError(f'labels vector is supposed to be 1-dimensional, got {labels.ndim} unexpected instead.')
+    if labels.size == 0:
+        raise ValueError(f'labels vector is supposed to be non-empty, got vectors created empty instead.')
+    num_sample_count = labels.shape[0]
+    Result_matrix = np.zeros((num_sample_count, num_classes), dtype=np.float64)
+    Result_matrix[np.arange(num_sample_count), labels] = 1.0
+    return Result_matrix.astype(dtype)
+    
